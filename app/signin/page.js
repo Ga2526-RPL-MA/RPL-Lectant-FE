@@ -39,6 +39,8 @@ export default function SignInPage() {
           <h1 className="auth-title">Sign In</h1>
 
       <form onSubmit={handleSignIn}>
+        <div className="input-selection">
+          <label className="forgot-label">Email ITS</label>
         <input
           type="email"
           className="auth-input"
@@ -47,6 +49,10 @@ export default function SignInPage() {
           onChange={(e) => setEmail(e.target.value)}
           required
         />
+        </div>
+
+        <div className="input-selection">
+          <label className="forgot-label">Password</label>
         <input
           type="password"
           className="auth-input"
@@ -55,7 +61,8 @@ export default function SignInPage() {
           onChange={(e) => setPassword(e.target.value)}
           required
         />
-
+        </div>
+        
         <div className="auth-footer">
           <label>
             <input
@@ -70,17 +77,16 @@ export default function SignInPage() {
           </Link>
         </div>
 
+        <div className="auth-footer">
+          <Link href="/signup" className="auth-link">
+            Don't have an account?
+          </Link>
+        
         <button type="submit" className="auth-button">
           Sign In
         </button>
+        </div>
       </form>
-
-      <div style={{ textAlign: "center", marginTop: "1rem" }}>
-        <span>Don’t have an account? </span>
-        <Link href="/signup" className="auth-link">
-          Sign Up
-        </Link>
-      </div>
     </div>
   </div>
   </div>

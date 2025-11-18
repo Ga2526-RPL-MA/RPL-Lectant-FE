@@ -37,19 +37,22 @@ export default function ForgotPasswordPage() {
         </h2>
 
         <p className="forgot-text">
-          Jangan khawatir, kami kirimkan email untuk reset password Anda
+          Jangan khawatir, kami kirimkan email untuk reset <br /> 
+          password Anda
         </p>
 
-        <form onSubmit={handleReset} className="forgot-form">
-          <label className="forgot-label">Email ITS</label>
+        <form onSubmit={handleReset}>
+          <div className="input-selection">
+            <label className="forgot-label">Email ITS</label>
           <input
             type="email"
             placeholder="Type your email ITS here"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="auth-input-forgot"
+            className="auth-input"
             required
           />
+          </div>
           <button type="submit" className="auth-button-forgot">
             Reset Password
           </button>
