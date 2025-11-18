@@ -77,6 +77,7 @@ export default function SignUpPage() {
         <h1 className="auth-title">Sign Up</h1>
 
         <form onSubmit={handleSignUp}>
+            <label className="forgot-label">Email ITS</label>
           <input
             type="email"
             placeholder="Email ITS"
@@ -86,6 +87,7 @@ export default function SignUpPage() {
             required
           />
 
+            <label className="forgot-label">Password</label>
           <input
             type="password"
             placeholder="Password"
@@ -95,6 +97,7 @@ export default function SignUpPage() {
             required
           />
 
+           <label className="forgot-label">Confirm Password</label>
           <input
             type="password"
             placeholder="Confirm Password"
@@ -104,19 +107,17 @@ export default function SignUpPage() {
             required
           />
 
-          <button type="submit" className="auth-button">
-            Sign Up
-          </button>
-        </form>
-
-        <div className="signup-link">
-          <p>
-            Already have an account?{" "}
-            <Link href="/signin" className="auth-link">
-              Sign In
-            </Link>
-          </p>
+        <div className="auth-footer">
+          <Link href="/signup" className="auth-link">
+            Don't have an account?
+          </Link>
+        
+        <button type="submit" className="auth-button">
+          Sign Up
+        </button>
         </div>
+      </form>
+        
       </div>
     </div>
     </div>
