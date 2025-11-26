@@ -9,16 +9,48 @@ export default function SignInPage() {
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
 
-  const handleSignIn = (e) => {
+  
+  const handleSignIn = async (e) => {
     e.preventDefault();
 
-    if (email.endsWith("@student.its.ac.id")) {
-      router.push("/mahasiswa");
-    } else if (email.endsWith("@its.ac.id")) {
-      router.push("/dosen");
-    } else {
-      alert("Gunakan email ITS yang valid!");
+    try{
+      const response = await fetch('https://rpl-lectant-be.vercel.app/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-type': 'application/json'
+        },
+        credentials: "include",
+        body: JSON.stringify({
+          email: email,
+          password: password
+        })
+      });
+
+      if(!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message);
+      }
+
+      const data = await response.json();
+
+      localStorage.setItem("accessToken", data.accessToken);
+
+      localStorage.setItem("role", data.role);
+      
+      console.log("Login berhasil!")
+  
+      if (email.endsWith("@student.its.ac.id")) {
+        router.push("/mahasiswa");
+      } else if (email.match(/@.+\.its\.ac\.id$/)) {
+        router.push("/dosen");
+      } else {
+        alert("Gunakan email ITS yang valid!");
+      }
+    } catch (error){
+      console.error(error);
+      alert(error.message);
     }
+    
   };
 
   return (

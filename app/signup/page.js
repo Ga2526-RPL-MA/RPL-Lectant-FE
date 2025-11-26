@@ -8,27 +8,55 @@ export default function SignUpPage() {
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
 
-  const handleSignUp = (e) => {
+  const handleSignUp = async (e) => {
     e.preventDefault();
 
-    if (password !== confirm) {
-      alert("❌ Password tidak sesuai!");
-      return;
+    try{
+
+      if (
+        !email.endsWith("@student.its.ac.id") &&
+        !email.endsWith("@if.its.ac.id")
+      ) {
+        alert("⚠️ Gunakan email ITS untuk Sign Up!");
+        return;
+      }
+
+      if (password !== confirm) {
+        alert("❌ Password tidak sesuai!");
+        return;
+      }
+
+      const response = await fetch('https://rpl-lectant-be.vercel.app/auth/register', {
+        method: 'POST',
+        headers: {
+          'Content-type': 'application/json'
+        },
+        credentials: "include",
+        body: JSON.stringify({
+          email: email,
+          password: password
+        })
+      });
+
+      if(!response.ok){
+        const errorData = await response.json();
+        throw new Error(errorData.message);
+      }
+
+      const data = await response.json()
+
+      console.log(data);
+
+      alert("✅ Selamat, akun Anda berhasil dibuat!");
+
+      setTimeout(() => {
+        window.location.href = "/signin";
+      }, 2000);
+
+    } catch (error) {
+      console.error(error);
+      alert(error.message);
     }
-
-    if (
-      !email.endsWith("@student.its.ac.id") &&
-      !email.endsWith("@its.ac.id")
-    ) {
-      alert("⚠️ Gunakan email ITS untuk Sign Up!");
-      return;
-    }
-
-    alert("✅ Selamat, akun Anda berhasil dibuat!");
-
-    setTimeout(() => {
-      window.location.href = "/signin";
-    }, 2000);
   };
 
   return (
