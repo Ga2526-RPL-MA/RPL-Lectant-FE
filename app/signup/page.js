@@ -108,8 +108,8 @@ export default function SignUpPage() {
           />
 
         <div className="auth-footer">
-          <Link href="/signup" className="auth-link">
-            Don't have an account?
+          <Link href="/signin" className="auth-link">
+            Already have an account?
           </Link>
         
         <button type="submit" className="auth-button">
