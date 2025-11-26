@@ -1,6 +1,9 @@
 "use client";
+
 import React, { useState } from "react";
-import Head from 'next/head';
+import { useRouter } from "next/compat/router";  
+import Head from "next/head";
+import ListLowongan from "../../components/ListLowongan";  
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";  
