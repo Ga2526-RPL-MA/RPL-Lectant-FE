@@ -1,8 +1,9 @@
 "use client";
 
 import React, { useState } from "react";
-import { useRouter } from "next/compat/router";  
+import { useRouter } from "next/navigation";  
 import Head from "next/head";
+import link from "next/link";
 import ListLowongan from "../../components/ListLowongan";  
 
 export default function DosenDashboard() {
@@ -32,10 +33,11 @@ export default function DosenDashboard() {
   };
 
   const handleDashboardClick = () => {
-    router.push("/dosen/dashboard"); 
+    router.push("/dosen"); 
   };
 
   const handleSubmitCreate = (form) => {
+    const courseName = form.mataKuliah.toLowerCase().replace(/\s+/g, "-");
     const newClass = {
       id: Date.now(),
       title: form.mataKuliah,
@@ -47,12 +49,17 @@ export default function DosenDashboard() {
 
     setClasses((prevClasses) => [...prevClasses, newClass]);
     setMode("list");
-    router.push("/dosen"); 
+    router.push("/dosen");
   };
 
   const handleCancelCreate = () => {
     router.push("/dosen");  
   };
+
+  const handleClassClick = (className) => {
+    const courseName = className.toLowerCase().replace(/\s+/g, "-");
+  router.push(`/dosen/class/${courseName}`);
+  }
 
   return (
     <>
@@ -115,7 +122,7 @@ export default function DosenDashboard() {
                   <div
                     key={kelas.id}
                     className="class-card"
-                    onClick={() => router.push(`/class/${classId}`)} 
+                    onClick={() => router.push(`/dosen/class/${kelas.title.toLowerCase().replace(/\s+/g, "-")}`)} 
                   >
                     <div className="card-header">
                       <span className="status">{kelas.status}</span>
