@@ -508,7 +508,7 @@ a:hover {
   background: white;
   border-radius: 12px;
   width: 313px;
-  height: 311px;
+  height: 230px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   overflow: hidden;
   text-align: center;
@@ -575,6 +575,14 @@ a:hover {
   padding: 24px 28px 28px 28px;
   margin-left: 40px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+}
+
+.job-description {
+  font-size: 18px;
+  color: #333333;
+  font-weight: 400;
+  color: #18337A;
+  margin-bottom: 8px;
 }
 
 .create-title {
@@ -813,6 +821,7 @@ a:hover {
   width: 100%;
   max-width: 600px;
   margin: auto;
+
 }
 
 .profile-header {
@@ -1035,3 +1044,479 @@ a:hover {
   background-color: #e8e8e8;
 }
 }
+
+.forgot-text {
+  font-size: 15px;
+  font-weight: 400;
+  margin-bottom: 0px;
+  margin-top: 10px;
+  color: #18337A;
+  align-items: left;
+  text-align: left;
+  justify-content: left;
+}
+
+.class-status {
+  display: flex;
+  gap: 10px;
+}
+
+.finalize-button {
+  padding: 10px 20px;
+  border-radius: 10px;
+  border: 1px solid #3DA7E0;
+  background-color: #3DA7E0;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 400;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.finalize-button:hover {
+  background-color: #3DA7E0;
+}
+
+.close-button {
+  padding: 10px 20px;
+  border-radius: 10px;
+  background-color: #E7000B;
+  border: 1px solid #E7000B;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 400;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.close-button:hover {
+  background-color: #E7000B;
+}
+
+
+.class-details-container {
+  width: 100%;
+  flex: 1.6;
+  background-color: #ffffff;
+  border-radius: 18px;
+  padding: 24px 40px 40px 40px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+} 
+
+.class-hero-card {
+  background: linear-gradient(135deg, #0b1c58, #3156c8);
+  border-radius: 0px;
+  padding: 24px 28px 28px 28px;
+  color: #ffffff;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  margin-bottom: 8px;
+  position: relative;
+  margin-top: -20px;
+}
+
+.hero-back-btn {
+  margin-left: 0;
+  margin-bottom: 12px;
+  text-align: center;
+  border-radius: 10px;
+  color: #ffffff;
+  background-color: rgba(255, 255, 255, 0.15); 
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  padding: 6px 14px;
+  cursor: pointer;
+}
+
+.class-hero-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.class-hero-title {
+  font-size: 24px;
+  font-weight: 400;
+  margin-bottom: 18px;
+  color: #ffffff;
+}
+
+.class-hero-info-row {
+  display: grid;
+  padding: 0px 40px 4px 40px ;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.class-hero-info-card {
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  padding: 12px 14px;
+}
+
+.class-hero-info-label {
+  font-size: 12px;
+  opacity: 0.85;
+}
+
+.class-hero-info-value {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.applicants-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.tabs-container-applicants {
+  display: flex;
+  gap: 0;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  background: white;
+  border-radius: 30px;
+  border: 1px solid #ccc;
+  overflow: hidden;
+  width: fit-content;
+}
+
+.applicants-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.applicants-meta {
+  display: flex;
+  gap: 8px;
+}
+
+.applicants-badge {
+  background-color: #e6f3ff;
+  color: #18337a;
+}
+
+.applicants-badge.accepted {
+  background-color: #d1fae5;
+  color: #047857;
+}
+
+.applicants-search-row {
+  margin-bottom: 16px;
+  position: right;
+}
+
+/* Responsif hero */
+@media (max-width: 900px) {
+  .class-hero-info-row {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .class-hero-top {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+@media (max-width: 600px) {
+  .class-hero-info-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Kartu pelamar ala list panjang */
+
+.applicant-card-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 16px 18px;
+  border-radius: 14px;
+  border: 1px solid #e5e7eb;
+  background-color: #ffffff;
+  margin-bottom: 12px;
+}
+
+/* kiri: avatar + teks */
+
+.applicant-main {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.applicant-avatar-circle {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid #e5e7eb;
+  background-color: #f5f5f5;
+}
+
+.applicant-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.applicant-name {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 500;
+  color: #18337a;
+}
+
+.applicant-subtext {
+  margin: 0;
+  font-size: 12px;
+  color: #6b7280;
+}
+
+/* kanan: badge + tombol */
+
+.applicant-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+/* badge status */
+
+.status-badge {
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 400;
+}
+
+.status-approved {
+  background-color: #d1fae5;
+  color: #047857;
+}
+
+.status-rejected {
+  background-color: #fee2e2;
+  color: #b91c1c;
+}
+
+.status-pending {
+  background-color: #f3f4f6;
+  color: #4b5563;
+}
+
+/* tombol kecil Terima / Tolak */
+
+.applicant-actions-inline {
+  display: flex;
+  gap: 8px;
+}
+
+.btn-accept-small,
+.btn-reject-small {
+  padding: 4px 10px;
+  border-radius: 8px;
+  font-size: 12px;
+  cursor: pointer;
+  border: 1px solid transparent;
+  background-color: #ffffff;
+}
+
+.btn-accept-small {
+  border-color: #16a34a;
+  color: #16a34a;
+}
+
+.btn-accept-small:hover {
+  background-color: #dcfce7;
+}
+
+.btn-reject-small {
+  border-color: #dc2626;
+  color: #dc2626;
+}
+
+.btn-reject-small:hover {
+  background-color: #fee2e2;
+}
+
+/* responsive biar rapih di layar kecil */
+@media (max-width: 768px) {
+  .applicant-card-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .applicant-right {
+    align-items: flex-start;
+  }
+}
+
+.applicant-view-btn {
+  margin-top: 8px;
+  padding: 6px 6px 6px 6px;
+  border-radius: 999px;
+  border: 1px solid #d1d5db;
+  background-color: #ffffff;
+  font-size: 12px;
+  cursor: pointer;
+  align-items: center;
+  align-content: center;
+  gap: 2px;
+}
+
+.applicant-view-btn:hover {
+  background-color: #f3f4f6;
+}
+
+/* MODAL BACKDROP */
+
+.applicant-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.4);
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding-top: 40px;
+  z-index: 50;
+}
+
+/* KOTAK MODAL */
+
+.applicant-modal {
+  background-color: #ffffff;
+  border-radius: 16px;
+  width: 360px;
+  max-width: 95vw;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.25);
+  padding: 18px 18px 20px;
+  font-family: "Poppins", sans-serif;
+}
+
+/* HEADER MODAL */
+
+.applicant-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.applicant-modal-header-left {
+  display: flex;
+  gap: 10px;
+}
+
+.applicant-avatar-circle.large {
+  width: 50px;
+  height: 50px;
+}
+
+.applicant-modal-header-right {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.modal-close-btn {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+/* SUMMARY GRID: IPK / SEMESTER / MENDAFTAR */
+
+.applicant-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.summary-box {
+  background-color: #f3f4ff;
+  border-radius: 10px;
+  padding: 8px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.summary-label {
+  font-size: 11px;
+  color: #6b7280;
+}
+
+.summary-value {
+  font-size: 14px;
+  font-weight: 500;
+  color: #111827;
+}
+
+/* SECTIONS DALAM MODAL */
+
+.applicant-section {
+  border-top: 1px solid #e5e7eb;
+  padding-top: 10px;
+  margin-top: 8px;
+}
+
+.section-title {
+  font-size: 13px;
+  font-weight: 500;
+  color: #111827;
+  margin-bottom: 4px;
+}
+
+.section-text {
+  font-size: 12px;
+  color: #4b5563;
+}
+
+/* BUTTON BAWAH MODAL */
+
+.applicant-modal-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.btn-warning-outline,
+.btn-danger-solid {
+  flex: 1;
+  padding: 8px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  cursor: pointer;
+  border: none;
+}
+
+.btn-warning-outline {
+  background-color: #fff7ed;
+  color: #b45309;
+  border: 1px solid #fed7aa;
+}
+
+.btn-warning-outline:hover {
+  background-color: #ffedd5;
+}
+
+.btn-danger-solid {
+  background-color: #ef4444;
+  color: #ffffff;
+}
+
+.btn-danger-solid:hover {
+  background-color: #dc2626;
+}
+

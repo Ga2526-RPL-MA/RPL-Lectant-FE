@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function CreateLowongan({ onSubmit }) {
   const [form, setForm] = useState({
@@ -16,13 +17,16 @@ export default function CreateLowongan({ onSubmit }) {
     kontrakSelesai: "",
   });
 
+  const router = useRouter();
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
+ const handleSubmit = (e) => {
     e.preventDefault();
+    const courseName = form.mataKuliah.toLowerCase().replace(/\s+/g, "-");
+    router.push(`/dosen/class/${courseName}`);
     if (onSubmit) {
       onSubmit(form); 
     }
@@ -40,9 +44,11 @@ export default function CreateLowongan({ onSubmit }) {
       </div>
 
       {/* Back Button */}
-      <button className="create-back-link" onClick={() => {}}>
-        ← Back to Dashboard
-      </button>
+      <div className="forgot-text" >
+         <a href="/dosen" className="create-back-link">
+          ← Back to Dashboard 
+        </a>
+      </div>
 
       {/* Main Content Layout */}
       <div className="create-layout">
