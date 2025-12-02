@@ -7,6 +7,7 @@ import Head from "next/head";
 export default function ClassDetailsPage() {
   const router = useRouter();
   const params = useParams();
+  const [jobStatus, setJobStatus] = useState("Seleksi Berlangsung");
 
   // Guard: kalau params belum siap
   const rawCourseName = params?.courseName;
@@ -19,6 +20,9 @@ export default function ClassDetailsPage() {
   const handleProfileClick = () => {
     router.push("/dosen/profile");
   };
+  const handleDashboardClick = () => {
+    router.push("/dosen");
+  }
 
   const[selectedApplicant, setSelectedApplicant] = useState(null);
 
@@ -32,7 +36,11 @@ export default function ClassDetailsPage() {
  const closeApplicantModal = () => {
     setSelectedApplicant(null);
   };
-  
+
+  const handleFinalizeClick = () => {
+    setJobStatus("Lowongan Aktif");  // Finalizing the job
+  };
+
   const [filter, setFilter] = useState("Semua");
   const [searchTerm, setSearchTerm] = useState("");
 
@@ -118,8 +126,13 @@ export default function ClassDetailsPage() {
           </div>
 
           <div className="class-status">
-            <button className="finalize-button">Finalisasi Seleksi</button>
-            <button className="close-button">Tutup Lowongan</button>
+            <button 
+              className="finalize-button"
+              onClick={handleFinalizeClick}
+              disabled={jobStatus === "Lowongan Aktif"}
+              >Finalisasi Seleksi
+            </button>
+            <button className="close-button" onClick={handleDashboardClick}>Tutup Lowongan</button>
           </div>
         </div>
 
@@ -170,7 +183,7 @@ export default function ClassDetailsPage() {
           <div className="applicant-modal-backdrop" onClick={closeApplicantModal}>
             <div
               className="applicant-modal"
-              onClick={(e) => e.stopPropagation()} // biar klik dalam modal tidak menutup
+              onClick={(e) => e.stopPropagation()} 
             >
               {/* HEADER MODAL */}
               <div className="applicant-modal-header">
