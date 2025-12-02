@@ -64,7 +64,7 @@ export default function DosenDashboard() {
   return (
     <>
       <Head>
-        <title>RPC Student - Dashboard</title>
+        <title>RPL Student - Dashboard</title>
       </Head>
       <div className="dashboard-container">
         <div className="dashboard-header">

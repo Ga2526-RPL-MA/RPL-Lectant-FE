@@ -1,19 +1,89 @@
-'use client';
-import Link from "next/link";
+"use client";
 
-export default function MahasiswaPage() {
+import React from "react";
+import { useRouter } from "next/navigation";
+
+export default function MahasiswaDashboardPage() {
+  const router = useRouter();
+  const [activeTab, setActiveTab] = React.useState("Lowongan Tersedia");
+  const handleProfileClick = () => {
+    router.push("/mahasiswa/profile");
+  }
+
+  const handleTabClick = [
+    { id: "Lowongan Tersedia", label: "Lowongan Tersedia" },
+    { id: "Lamaran Saya", label: "Lamaran Saya" },
+  ];
+
+  const handleExploreClick = () => {
+    router.push("/mahasiswa/lowongan");
+  };
+
   return (
-    <div className="min-h-screen bg-blue-50 flex flex-col items-center justify-center">
-      <h1 className="text-3xl font-bold text-blue-800 mb-4">
-        Selamat Datang, Mahasiswa Teknik Informatika ITS 👩‍🎓
-      </h1>
-      <p className="text-gray-700 mb-6 text-center max-w-md">
-        Anda berhasil login sebagai mahasiswa.
-      </p>
+    <div className="dashboard-container">
+        <header className="dashboard-header">
+          <img
+            src="/images/RPL-LECTANT.png"
+            alt="RPL Lectant"
+            className="dashboard-logo"
+          />
+          <div className="dashboard-profile">
+            <button className="profile-button" onClick={handleProfileClick}>
+              MR
+            </button>
+          </div>
+        </header>
 
-      <Link href="/signin" className="text-sm text-blue-600 hover:underline">
-        Keluar
-      </Link>
+          <div className="class-hero-card">
+            <h1 className="class-hero-title">
+              Selamat Datang, Muhammad Rausyan!
+            </h1>
+            <p className="student-header-subtitle">
+              Temukan lowongan asisten dosen yang sesuai dengan keahlian Anda
+            </p>
+          </div>
+      
+    <div className="tabs-wrapper-mahasiswa">
+        <div className="tabs-container-mahasiswa">
+          {handleTabClick.map((tab) => (
+        <button
+          key={tab.id}
+          className={`tab-button ${activeTab === tab.id ? "active" : ""}`}
+          onClick={() => setActiveTab(tab.id)} 
+        >
+          {tab.label}
+        </button>
+      ))}
+        </div>
+      </div>
+
+      <main className="student-dashboard-body">
+        <div className="student-empty-card">
+          <div className="student-empty-icon-wrapper">
+            <div className="student-empty-icon-circle">
+              <img
+                src="/images/ICON MAHASISWA.png"
+                alt=""
+                className="student-empty-icon"
+            />
+            </div>
+          </div>
+
+          <h2 className="student-empty-title">Belum Ada Lamaran</h2>
+          <p className="student-empty-text">
+            Anda belum mengirim lamaran untuk posisi asisten dosen.
+            <br />
+            Mulai lamar lowongan yang sesuai dengan keahlian dan minat Anda!
+          </p>
+          <button
+            type="button"
+            className="btn-primary student-explore-btn"
+            onClick={handleExploreClick}
+          >
+            Jelajahi Lowongan Tersedia
+          </button>
+        </div>
+      </main>
     </div>
   );
 }
