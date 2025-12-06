@@ -6,13 +6,6 @@ import Head from "next/head";
 
 export default function ProfilePage() {
   const router = useRouter();
-  const [routerReady, setRouterReady] = useState(false);
-
-  useEffect(() => {
-    if (router.isReady) {
-      setRouterReady(true);
-    }
-  }, [router.isReady]);
 
   const [profileData, setProfileData] = useState({
     nip: "197805122005011001",
@@ -59,11 +52,7 @@ export default function ProfilePage() {
   };
 
   const handleBackClick = () => {
-    if (routerReady) {
-      router.push("/dosen");
-    } else {
-      console.error("Router not ready yet");
-    }
+    router.push("/dosen");
   };
 
   return (
@@ -196,13 +185,10 @@ export default function ProfilePage() {
                   </select>
                 </div>
                 <div className="form-actions">
-                  <button type="submit" className="btn-secondary"> Batal </button>
-                  <button
-                    type="button"
-                    onClick={() => setIsEditing(false)}
-                  >
-                    Simpan
+                <button type="button" className="btn-secondary" onClick={handleCancel}>
+                    Batal
                   </button>
+                  <button type="submit">Simpan</button>
                 </div>
               </form>
             </div>
