@@ -9,6 +9,9 @@ export default function LowonganMahasiswa() {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState("Lowongan Tersedia");
   const [searchQuery, setSearchQuery] = useState("");
+  const handleProfileClick = () => {
+    router.push("/mahasiswa/profile");
+  }
 
   // Sample Jobs Data
   const jobs = [
@@ -36,7 +39,11 @@ export default function LowonganMahasiswa() {
       <header className="dashboard-header">
         <img src="/images/RPL-LECTANT.png" alt="Logo" className="dashboard-logo" />
         <div className="dashboard-profile">
-          <button className="profile-button">MR</button>
+          <div className="dashboard-profile">
+          <button className="profile-button" onClick={handleProfileClick}>
+            MH
+          </button>
+        </div>
         </div>
       </header>
 
