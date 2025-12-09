@@ -9,6 +9,9 @@ export default function LowonganMahasiswa() {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState("Lowongan Tersedia");
   const [searchQuery, setSearchQuery] = useState("");
+  const handleProfileClick = () => {
+    router.push("/mahasiswa/profile");
+  }
 
   // Sample Jobs Data
   const jobs = [
@@ -21,10 +24,6 @@ export default function LowonganMahasiswa() {
     setActiveTab(tabId);
   };
 
-  const tabs = [
-    { id: "Lowongan Tersedia", label: "Lowongan Tersedia" },
-    { id: "Lamaran Saya", label: "Lamaran Saya" },
-  ];
 
   const filteredJobs = jobs.filter((job) =>
     job.status === "Lowongan Aktif" &&
@@ -36,22 +35,16 @@ export default function LowonganMahasiswa() {
       <header className="dashboard-header">
         <img src="/images/RPL-LECTANT.png" alt="Logo" className="dashboard-logo" />
         <div className="dashboard-profile">
-          <button className="profile-button">MR</button>
+          <div className="dashboard-profile">
+          <button className="profile-button" onClick={handleProfileClick}>
+            MH
+          </button>
+        </div>
         </div>
       </header>
 
       <div className="tabs-wrapper-mahasiswa">
-        <div className="tabs-container-mahasiswa">
-          {tabs.map((tab) => (
-            <button
-              key={tab.id}
-              className={`tab-button ${activeTab === tab.id ? "active" : ""}`}
-              onClick={() => handleTabClick(tab.id)}
-            >
-              {tab.label}
-            </button>
-          ))}
-        </div>
+        <div className="tabs-container-mahasiswa"></div>
 
         <input
           type="text"

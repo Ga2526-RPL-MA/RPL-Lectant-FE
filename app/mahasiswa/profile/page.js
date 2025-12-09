@@ -1,34 +1,120 @@
 "use client";
 
-import React from "react";
+import React, { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Head from "next/head";
 
 export default function MahasiswaDashboardPage() {
   const router = useRouter();
 
+  // ==== STATE FORM ====
+  const [nrp, setNrp] = useState("");
+  const [namaLengkap, setNamaLengkap] = useState("");
+  const [email, setEmail] = useState("");
+  const [telepon, setTelepon] = useState("");
+  const [jurusan, setJurusan] = useState("");
+  const [angkatan, setAngkatan] = useState("");
+  const [semester, setSemester] = useState("");
+  const [ipk, setIpk] = useState("");
+
+  // ==== STATE FOTO PROFIL ====
+  const [photo, setPhoto] = useState(null);           // file foto
+  const [photoPreview, setPhotoPreview] = useState(""); // URL preview
+  const photoInputRef = useRef(null);
+
+  // ==== STATE TRANSKRIP ====
+  const [transcript, setTranscript] = useState(null); // file PDF
+  const transcriptInputRef = useRef(null);
+
   const handleBack = () => {
-    router.push("/"); // atau "/mahasiswa/dashboard" kalau punya route lain
+    router.push("/mahasiswa");
   };
 
   const handleProfileClick = () => {
     router.push("/mahasiswa/profile");
   };
 
+  // ====== FOTO PROFIL ======
+  const handleUploadPhotoClick = () => {
+    if (photoInputRef.current) {
+      photoInputRef.current.click();
+    }
+  };
+
+  const handlePhotoChange = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Validasi ukuran 2MB
+    if (file.size > 2 * 1024 * 1024) {
+      alert("Ukuran foto maksimal 2MB");
+      return;
+    }
+
+    setPhoto(file);
+    setPhotoPreview(URL.createObjectURL(file));
+  };
+
+  const handleRemovePhoto = () => {
+    setPhoto(null);
+    setPhotoPreview("");
+    if (photoInputRef.current) {
+      photoInputRef.current.value = "";
+    }
+  };
+
+  // ====== TRANSKRIP PDF ======
+  const handleTranscriptButtonClick = () => {
+    if (transcriptInputRef.current) {
+      transcriptInputRef.current.click();
+    }
+  };
+
+  const handleTranscriptChange = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Validasi ukuran 5MB
+    if (file.size > 5 * 1024 * 1024) {
+      alert("Ukuran transkrip maksimal 5MB");
+      return;
+    }
+
+    setTranscript(file);
+  };
+
+  const handleRemoveTranscript = () => {
+    setTranscript(null);
+    if (transcriptInputRef.current) {
+      transcriptInputRef.current.value = "";
+    }
+  };
+
+  // ====== SUBMIT (FRONTEND ONLY) ======
   const handleSubmit = (e) => {
     e.preventDefault();
-    // TODO: kirim data ke backend
-    console.log("Simpan perubahan profil mahasiswa");
+
+    console.log("DATA PROFIL (front-end only):", {
+      nrp,
+      namaLengkap,
+      email,
+      telepon,
+      jurusan,
+      angkatan,
+      semester,
+      ipk,
+      photo,
+      transcript,
+    });
+
+    alert(
+      "Data profil sudah dikumpulkan di front-end (cek console). Nanti tinggal disambungkan ke API."
+    );
   };
 
   return (
     <div className="dashboard-container">
-      <Head>
-        <title>Buat Profil Mahasiswa</title>
-      </Head>
-
-      {/* HEADER ATAS */}
-      <header className="dashboard-header">
+      <header className="dashboard-header-mahasiswa">
         <img
           src="/images/RPL-LECTANT.png"
           alt="Logo"
@@ -41,18 +127,10 @@ export default function MahasiswaDashboardPage() {
         </div>
       </header>
 
-      <main className="student-main">
-        <button className="create-back-link" onClick={handleBack}>
+      <main className="mahasiswa-dashboard-body">
+        <p className="create-back-link" onClick={handleBack}>
           ← Kembali
-        </button>
-
-        <div className="student-page-title">
-          <h1 className="student-page-heading">Buat Profil Mahasiswa</h1>
-          <p className="student-page-subtitle">
-            Perbarui informasi profil Anda untuk meningkatkan peluang diterima
-            sebagai asisten dosen.
-          </p>
-        </div>
+        </p>
 
         <div className="student-profile-wrapper">
           {/* KARTU UTAMA PROFIL */}
@@ -61,15 +139,44 @@ export default function MahasiswaDashboardPage() {
             <div className="student-photo-row">
               <div className="student-photo-box">
                 <div className="student-photo-placeholder">
-                  {/* icon orang simple */}
-                  <span>👤</span>
+                  {photoPreview ? (
+                    <img
+                      src={photoPreview}
+                      alt="Foto Profil"
+                      className="student-photo-preview"
+                    />
+                  ) : (
+                    <span>👤</span>
+                  )}
                 </div>
+
                 <button
                   type="button"
                   className="student-upload-btn btn-secondary"
+                  onClick={handleUploadPhotoClick}
                 >
-                  Upload Foto
+                  {photoPreview ? "Ganti Foto" : "Upload Foto"}
                 </button>
+
+                {photoPreview && (
+                  <button
+                    type="button"
+                    className="student-upload-btn btn-secondary"
+                    style={{ marginTop: "0.5rem" }}
+                    onClick={handleRemovePhoto}
+                  >
+                    Hapus Foto
+                  </button>
+                )}
+
+                {/* INPUT FILE FOTO (HIDDEN) */}
+                <input
+                  type="file"
+                  accept="image/*"
+                  ref={photoInputRef}
+                  style={{ display: "none" }}
+                  onChange={handlePhotoChange}
+                />
               </div>
 
               <div className="student-photo-text">
@@ -89,7 +196,6 @@ export default function MahasiswaDashboardPage() {
             {/* INFORMASI PERSONAL */}
             <section className="student-section">
               <div className="student-section-title">
-                <span className="student-section-icon">👤</span>
                 <span>Informasi Personal</span>
               </div>
               <p className="student-section-desc">
@@ -105,6 +211,9 @@ export default function MahasiswaDashboardPage() {
                     type="text"
                     className="form-input"
                     placeholder="Masukkan NRP"
+                    value={nrp}
+                    onChange={(e) => setNrp(e.target.value)}
+                    required
                   />
                 </div>
                 <div className="form-col">
@@ -115,6 +224,9 @@ export default function MahasiswaDashboardPage() {
                     type="text"
                     className="form-input"
                     placeholder="Masukkan nama lengkap"
+                    value={namaLengkap}
+                    onChange={(e) => setNamaLengkap(e.target.value)}
+                    required
                   />
                 </div>
               </div>
@@ -123,7 +235,6 @@ export default function MahasiswaDashboardPage() {
             {/* INFORMASI KONTAK */}
             <section className="student-section">
               <div className="student-section-title">
-                <span className="student-section-icon">✉️</span>
                 <span>Informasi Kontak</span>
               </div>
               <p className="student-section-desc">
@@ -140,6 +251,9 @@ export default function MahasiswaDashboardPage() {
                     type="email"
                     className="form-input"
                     placeholder="contoh@its.ac.id"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
                   />
                 </div>
                 <div className="form-col">
@@ -150,6 +264,9 @@ export default function MahasiswaDashboardPage() {
                     type="tel"
                     className="form-input"
                     placeholder="08xx-xxxx-xxxx"
+                    value={telepon}
+                    onChange={(e) => setTelepon(e.target.value)}
+                    required
                   />
                 </div>
               </div>
@@ -158,7 +275,6 @@ export default function MahasiswaDashboardPage() {
             {/* INFORMASI AKADEMIK */}
             <section className="student-section">
               <div className="student-section-title">
-                <span className="student-section-icon">🎓</span>
                 <span>Informasi Akademik</span>
               </div>
               <p className="student-section-desc">
@@ -170,10 +286,15 @@ export default function MahasiswaDashboardPage() {
                   <label className="form-label">
                     Jurusan <span className="form-required">*</span>
                   </label>
-                  <select className="form-input">
-                    <option>Jurusan</option>
-                    <option>Teknik Informatika</option>
-                    <option>Sistem Informasi</option>
+                  <select
+                    className="form-input"
+                    value={jurusan}
+                    onChange={(e) => setJurusan(e.target.value)}
+                    required
+                  >
+                    <option value="">Jurusan</option>
+                    <option value="Teknik Informatika">Teknik Informatika</option>
+                    <option value="Sistem Informasi">Sistem Informasi</option>
                   </select>
                 </div>
                 <div className="form-col">
@@ -184,6 +305,9 @@ export default function MahasiswaDashboardPage() {
                     type="text"
                     className="form-input"
                     placeholder="Misal: 2021"
+                    value={angkatan}
+                    onChange={(e) => setAngkatan(e.target.value)}
+                    required
                   />
                 </div>
               </div>
@@ -193,11 +317,16 @@ export default function MahasiswaDashboardPage() {
                   <label className="form-label">
                     Semester Aktif <span className="form-required">*</span>
                   </label>
-                  <select className="form-input">
-                    <option>Pilih semester</option>
-                    <option>Semester 3</option>
-                    <option>Semester 5</option>
-                    <option>Semester 7</option>
+                  <select
+                    className="form-input"
+                    value={semester}
+                    onChange={(e) => setSemester(e.target.value)}
+                    required
+                  >
+                    <option value="">Pilih semester</option>
+                    <option value="3">Semester 3</option>
+                    <option value="5">Semester 5</option>
+                    <option value="7">Semester 7</option>
                   </select>
                 </div>
                 <div className="form-col">
@@ -208,22 +337,55 @@ export default function MahasiswaDashboardPage() {
                     type="text"
                     className="form-input"
                     placeholder="Misal: 3.75"
+                    value={ipk}
+                    onChange={(e) => setIpk(e.target.value)}
+                    required
                   />
                 </div>
               </div>
 
+              {/* TRANSKRIP NILAI – TOMBOL + PREVIEW NAMA FILE */}
               <div className="form-group">
-                <label className="form-label">
+                <label htmlFor="transcript" className="form-label">
                   Transkrip Nilai <span className="form-required">*</span>
                 </label>
+
                 <div className="student-upload-transkrip">
                   <button
                     type="button"
                     className="student-upload-btn btn-secondary"
+                    onClick={handleTranscriptButtonClick}
                   >
                     Upload Transkrip (PDF, Max 5MB)
                   </button>
+
+                  {/* INPUT FILE (HIDDEN) */}
+                  <input
+                    type="file"
+                    id="transcript"
+                    ref={transcriptInputRef}
+                    onChange={handleTranscriptChange}
+                    accept="application/pdf"
+                    style={{ display: "none" }}
+                  />
                 </div>
+
+                {transcript && (
+                  <div className="file-preview">
+                    <span>{transcript.name}</span>
+                    <button
+                      type="button"
+                      onClick={handleRemoveTranscript}
+                      className="remove-file"
+                    >
+                      X
+                    </button>
+                  </div>
+                )}
+
+                <small>
+                  Pastikan dokumen yang Anda upload dapat dibaca dengan jelas.
+                </small>
               </div>
             </section>
 
