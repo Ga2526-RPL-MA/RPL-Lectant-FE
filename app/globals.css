@@ -3210,6 +3210,18 @@ input[type="file"] {
   padding: 40px;
 }
 
+.create-back-link-studebt {
+  background: transparent;
+  border: none;
+  color: #4b5563;
+  font-size: 14px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 12px;
+}
+
 .student-empty-card {
   background-color: #ffffff;
   border-radius: 18px;
@@ -3223,21 +3235,6 @@ input[type="file"] {
 
 .student-empty-icon-wrapper {
   margin-bottom: 16px;
-}
-
-.student-empty-icon-circle {
-  width: 96px;
-  height: 96px;
-  border-radius: 50%;
-  background-color: #f1f5ff;
-  border: 4px solid #e0edff;
-  display: flex;
-  position: center;
-  justify-content: center;
-  align-items: center;
-  margin: 0 auto;
-  margin-top: -15px;
-  margin-bottom: 20px;
 }
 
 .student-empty-icon {
@@ -3623,4 +3620,710 @@ input[type="file"] {
   display: flex;
   justify-content: flex-start;
   gap: 20px;
+}
+
+.student-profile-wrapper {
+  display: grid;
+  grid-template-columns: minmax(0, 2.2fr) minmax(0, 1fr);
+  gap: 24px;
+  margin-left: 40px;
+}
+
+/* ====== KARTU PROFIL UTAMA ====== */
+
+.student-profile-card {
+  background-color: #ffffff;
+  border-radius: 16px;
+  padding: 24px 24px 20px 24px;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
+  border: 1px solid #e5e7eb;
+}
+
+/* ====== FOTO PROFIL ====== */
+
+.student-photo-row {
+  display: grid;
+  grid-template-columns: 180px minmax(0, 1fr);
+  gap: 24px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #e5e7eb;
+  margin-bottom: 20px;
+}
+
+.student-photo-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.student-photo-placeholder {
+  width: 120px;
+  height: 120px;
+  border-radius: 9999px;
+  border: 2px solid #e5e7eb;
+  background: #f9fafb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #9ca3af;
+  font-size: 40px;
+  overflow: hidden;
+}
+
+.student-photo-preview {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* teks deskripsi foto */
+
+.student-photo-text h2 {
+  font-size: 16px;
+  margin: 0 0 4px 0;
+  font-weight: 600;
+}
+
+.student-photo-text p {
+  font-size: 14px;
+  color: #6b7280;
+  margin-bottom: 8px;
+}
+
+.student-photo-text ul {
+  padding-left: 18px;
+  margin: 0;
+  list-style: disc;
+}
+
+.student-photo-text li {
+  font-size: 13px;
+  color: #6b7280;
+}
+
+/* ====== SECTION-GENERAL (Personal/Kontak/Akademik) ====== */
+
+.student-section {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.student-section:first-of-type {
+  border-top: none;
+  padding-top: 8px;
+}
+
+.student-section-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  font-size: 14px;
+  color: #111827;
+  margin-bottom: 4px;
+}
+
+.student-section-icon {
+  width: 20px;
+  height: 20px;
+  border-radius: 999px;
+  background: #eff6ff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+}
+
+.student-section-desc {
+  font-size: 13px;
+  color: #6b7280;
+  margin-bottom: 12px;
+}
+
+.student-upload-transkrip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.file-preview {
+  margin-top: 6px;
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  background-color: #f9fafb;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+}
+
+.file-preview span {
+  max-width: 260px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.remove-file {
+  border: none;
+  background: #fee2e2;
+  color: #b91c1c;
+  font-size: 11px;
+  padding: 2px 6px;
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.form-group small {
+  font-size: 12px;
+  color: #6b7280;
+  margin-top: 2px;
+}
+
+.student-tips-card {
+  background-color: #ecf3ff;
+  border-radius: 16px;
+  padding: 16px 18px;
+  border: 1px solid #d1e1ff;
+  align-self: flex-start;
+}
+
+.student-tips-card h3 {
+  font-size: 14px;
+  margin: 0 0 10px 0;
+  font-weight: 600;
+  color: #1e3a8a;
+}
+
+.student-tips-card ul {
+  list-style: disc;
+  padding-left: 18px;
+  margin: 0;
+}
+
+.student-tips-card li {
+  font-size: 12px;
+  color: #334155;
+  margin-bottom: 4px;
+}
+
+/* ====== RESPONSIVE ====== */
+
+@media (max-width: 960px) {
+  .student-profile-wrapper {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .student-tips-card {
+    margin-top: 12px;
+  }
+
+  .student-photo-row {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .student-dashboard-body {
+    margin-top: 16px;
+    padding: 0 16px 32px 16px;
+  }
+
+  .student-profile-card {
+    padding: 18px 16px 16px 16px;
+  }
+
+  .form-row {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.mahasiswa-dashboard-body {
+  max-width: 1120px;
+  margin-top: 350px;
+  /*margin: 0 auto 40px auto;*/
+  padding: 80px 24px 40px 24px; 
+  /* 64px tinggi header + 16px jarak */
+}
+
+.dashboard-header-mahasiswa {
+  height: 64px;
+  padding: 0 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid #e5e7eb;
+  background-color: #ffffff;
+  position: fixed;   /* atau sticky */
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 20;
+}
+
+.dashboard-logo {
+  height: 32px;
+  width: auto;
+}
+
+.dashboard-profile {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.profile-button {
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  border: none;
+  background-color: #111827;
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* ====== BODY & TITLE ====== */
+
+.lecturer-dashboard-body {
+  max-width: 1120px;
+  margin: 0 auto 40px auto;
+  padding: 24px 24px 40px 24px;
+}
+
+.create-back-link {
+  background: transparent;
+  border: none;
+  color: #4b5563;
+  font-size: 14px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 12px;
+}
+
+.lecturer-page-title {
+  margin-bottom: 12px;
+}
+
+.lecturer-page-heading {
+  font-size: 24px;
+  font-weight: 600;
+  color: #111827;
+}
+
+/* ====== GRID 2 KOLOM ====== */
+
+.lecturer-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 2.4fr) minmax(0, 1.2fr);
+  gap: 24px;
+}
+
+/* ====== KARTU UMUM ====== */
+
+.lecturer-profile-card,
+.lecturer-courses-card,
+.lecturer-stats-card,
+.lecturer-tip-card {
+  background-color: #ffffff;
+  border-radius: 16px;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
+}
+
+/* ====== KARTU PROFIL ====== */
+
+.lecturer-profile-card {
+  padding: 20px 24px 18px 24px;
+}
+
+.lecturer-profile-top {
+  display: grid;
+  grid-template-columns: 180px minmax(0, 1fr);
+  gap: 20px;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.lecturer-avatar-wrapper {
+  position: relative;
+  width: 140px;
+  height: 140px;
+}
+
+.lecturer-avatar-shadow {
+  position: absolute;
+  inset: 18px 10px -10px 10px;
+  border-radius: 999px;
+  background-color: #ffffff;
+  box-shadow: 0 18px 30px rgba(15, 23, 42, 0.15);
+}
+
+.lecturer-avatar {
+  position: absolute;
+  inset: 0;
+  border-radius: 999px;
+  background-color: #9ca3af;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  font-size: 32px;
+  font-weight: 600;
+  overflow: hidden;
+}
+
+.lecturer-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.lecturer-profile-maininfo h2 {
+  margin: 0 0 4px 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #111827;
+}
+
+.lecturer-role-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background-color: #e0edff;
+  color: #1d4ed8;
+  font-size: 11px;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.lecturer-nip {
+  font-size: 13px;
+  color: #6b7280;
+  margin-top: 2px;
+}
+
+/* Info grid (Email, Jurusan, Telepon) */
+
+.lecturer-info-grid {
+  margin-top: 10px;
+  padding-top: 12px;
+  border-top: 1px solid #e5e7eb;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px 24px;
+  font-size: 13px;
+}
+
+.lecturer-info-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.lecturer-info-icon {
+  width: 24px;
+  height: 24px;
+  border-radius: 999px;
+  background-color: #eff6ff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+}
+
+.lecturer-info-label {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.lecturer-info-value {
+  font-size: 13px;
+  color: #111827;
+}
+
+/* Tombol edit */
+
+.lecturer-profile-actions {
+  margin-top: 18px;
+}
+
+.lecturer-edit-btn {
+  padding-inline: 18px;
+}
+
+/* ====== EDIT MODE ====== */
+
+.lecturer-edit-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.lecturer-upload-label {
+  display: inline-flex;
+  margin-top: 6px;
+  font-size: 12px;
+  color: #2563eb;
+  cursor: pointer;
+  border-radius: 999px;
+  border: 1px solid #2563eb;
+  padding: 4px 10px;
+}
+
+.lecturer-upload-label input {
+  display: none;
+}
+
+.lecturer-edit-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px 18px;
+  margin-top: 4px;
+}
+
+.form-col {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: #374151;
+  margin-bottom: 4px;
+}
+
+.form-input {
+  border-radius: 10px;
+  border: 1px solid #d1d5db;
+  padding: 8px 10px;
+  font-size: 14px;
+  outline: none;
+  background-color: #ffffff;
+}
+
+.form-input:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 1px rgba(37, 99, 235, 0.25);
+}
+
+.form-actions,
+.lecturer-edit-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+/* ====== BUTTONS ====== */
+
+.btn-primary,
+.btn-secondary {
+  font-size: 14px;
+  border-radius: 999px;
+  padding: 8px 16px;
+  border-width: 1px;
+  border-style: solid;
+  cursor: pointer;
+}
+
+.btn-primary {
+  background-color: #2563eb;
+  border-color: #2563eb;
+  color: #ffffff;
+  font-weight: 500;
+}
+
+.btn-primary:hover {
+  background-color: #1d4ed8;
+}
+
+.btn-secondary {
+  background-color: #ffffff;
+  color: #2563eb;
+  border-color: #2563eb;
+  font-weight: 500;
+}
+
+.btn-secondary:hover {
+  background-color: #eff6ff;
+}
+
+/* ====== KARTU STATISTIK & CATATAN ====== */
+
+.lecturer-side-column {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.lecturer-stats-card {
+  padding: 16px 18px;
+}
+
+.lecturer-stats-card h3 {
+  margin: 0 0 10px 0;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.stats-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.stats-item {
+  border-radius: 12px;
+  padding: 10px 12px;
+  font-size: 13px;
+}
+
+.stats-label {
+  color: #4b5563;
+  margin-bottom: 4px;
+}
+
+.stats-value {
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.stats-blue {
+  background-color: #e0edff;
+  color: #1d4ed8;
+}
+
+.stats-green {
+  background-color: #dcfce7;
+  color: #15803d;
+}
+
+.stats-pink {
+  background-color: #fee7f3;
+  color: #be185d;
+}
+
+/* Catatan */
+
+.lecturer-tip-card {
+  padding: 14px 16px;
+  background-color: #ecf3ff;
+  border-color: #d1e1ff;
+}
+
+.lecturer-tip-card h3 {
+  margin: 0 0 6px 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: #1e3a8a;
+}
+
+.lecturer-tip-card p {
+  margin: 0;
+  font-size: 13px;
+  color: #374151;
+}
+
+/* ====== KARTU MATA KULIAH ====== */
+
+.lecturer-courses-card {
+  margin-top: 16px;
+  padding: 16px 18px 18px 18px;
+}
+
+.lecturer-section-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  font-size: 14px;
+  margin-bottom: 10px;
+}
+
+.lecturer-section-icon {
+  width: 20px;
+  height: 20px;
+  border-radius: 999px;
+  background: #eff6ff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+}
+
+.courses-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.courses-table thead tr {
+  background-color: #f3f4f6;
+}
+
+.courses-table th,
+.courses-table td {
+  padding: 8px 10px;
+  text-align: left;
+}
+
+.courses-table th {
+  font-weight: 600;
+  color: #4b5563;
+  font-size: 12px;
+}
+
+.courses-table tbody tr:nth-child(even) {
+  background-color: #f9fafb;
+}
+
+.badge-semester {
+  display: inline-flex;
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 500;
+  background-color: #e0edff;
+  color: #1d4ed8;
+}
+
+/* ====== RESPONSIVE ====== */
+
+@media (max-width: 960px) {
+  .lecturer-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .lecturer-profile-top {
+    grid-template-columns: minmax(0, 1fr);
+    justify-items: center;
+  }
+
+  .lecturer-info-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .lecturer-dashboard-body {
+    padding: 16px 16px 32px 16px;
+  }
+
+  .lecturer-profile-card {
+    padding: 16px;
+  }
+
+  .lecturer-edit-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }
