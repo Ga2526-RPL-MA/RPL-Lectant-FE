@@ -24,10 +24,6 @@ export default function LowonganMahasiswa() {
     setActiveTab(tabId);
   };
 
-  const tabs = [
-    { id: "Lowongan Tersedia", label: "Lowongan Tersedia" },
-    { id: "Lamaran Saya", label: "Lamaran Saya" },
-  ];
 
   const filteredJobs = jobs.filter((job) =>
     job.status === "Lowongan Aktif" &&
@@ -48,17 +44,7 @@ export default function LowonganMahasiswa() {
       </header>
 
       <div className="tabs-wrapper-mahasiswa">
-        <div className="tabs-container-mahasiswa">
-          {tabs.map((tab) => (
-            <button
-              key={tab.id}
-              className={`tab-button ${activeTab === tab.id ? "active" : ""}`}
-              onClick={() => handleTabClick(tab.id)}
-            >
-              {tab.label}
-            </button>
-          ))}
-        </div>
+        <div className="tabs-container-mahasiswa"></div>
 
         <input
           type="text"
