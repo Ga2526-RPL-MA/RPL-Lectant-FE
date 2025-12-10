@@ -6,12 +6,6 @@ import Head from "next/head";
 import link from "next/link";
 import ListLowongan from "../../components/ListLowongan";  
 
-import React, { useState } from "react";
-import { useRouter } from "next/navigation";  
-import Head from "next/head";
-import link from "next/link";
-import ListLowongan from "../../components/ListLowongan";  
-
 export default function DosenDashboard() {
   const router = useRouter();
   const [mode, setMode] = useState("list");
