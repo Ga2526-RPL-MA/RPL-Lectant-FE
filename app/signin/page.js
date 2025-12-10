@@ -111,7 +111,7 @@ export default function SignInPage() {
 
         <div className="auth-footer">
           <Link href="/signup" className="auth-link">
-            Don't have an account?
+            {"Don't have an account?"}
           </Link>
         
         <button type="submit" className="auth-button">

@@ -8,6 +8,23 @@ export default function ClassDetailsPage() {
   const router = useRouter();
   const params = useParams();
   const [jobStatus, setJobStatus] = useState("Seleksi Berlangsung");
+  const[selectedApplicant, setSelectedApplicant] = useState(null);
+  const [filter, setFilter] = useState("Semua");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [applicants, setApplicants] = useState([
+    { 
+      id: 1,
+      name: "Ahmad Rizki Pratama",
+      status: "Pending",
+      nrp: "13521001",
+      email: "ahmad@student.ac.id",
+      ipk: 3.85,
+      semester: 5,
+      phone: "081234567890",
+      appliedDate: "1 Nov 2024",
+      motivation: "Saya tertarik menjadi asisten dosen karena ingin memperdalam pemahaman saya tentang materi kuliah serta mengembangkan kemampuan mengajar saya.",
+    },
+  ]);
 
   // Guard: kalau params belum siap
   const rawCourseName = params?.courseName;
@@ -24,8 +41,6 @@ export default function ClassDetailsPage() {
     router.push("/dosen");
   }
 
-  const[selectedApplicant, setSelectedApplicant] = useState(null);
-
   const openApplicant = (applicant) => {
     setSelectedApplicant(applicant);
   }
@@ -41,23 +56,6 @@ export default function ClassDetailsPage() {
     setJobStatus("Lowongan Aktif");  // Finalizing the job
   };
 
-  const [filter, setFilter] = useState("Semua");
-  const [searchTerm, setSearchTerm] = useState("");
-
-  const [applicants, setApplicants] = useState([
-    { 
-      id: 1,
-      name: "Ahmad Rizki Pratama",
-      status: "Pending",
-      nrp: "13521001",
-      email: "ahmad@student.ac.id",
-      ipk: 3.85,
-      semester: 5,
-      phone: "081234567890",
-      appliedDate: "1 Nov 2024",
-      motivation: "Saya tertarik menjadi asisten dosen karena ingin memperdalam pemahaman saya tentang materi kuliah serta mengembangkan kemampuan mengajar saya.",
-    },
-  ]);
 
   const filterTabs = [
     { id: "Semua", label: "Semua" },
