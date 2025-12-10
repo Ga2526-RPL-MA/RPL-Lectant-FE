@@ -7,7 +7,6 @@ import Head from "next/head";
 export default function MahasiswaDashboardPage() {
   const router = useRouter();
 
-  // ==== STATE FORM ====
   const [nrp, setNrp] = useState("");
   const [namaLengkap, setNamaLengkap] = useState("");
   const [email, setEmail] = useState("");
@@ -17,12 +16,10 @@ export default function MahasiswaDashboardPage() {
   const [semester, setSemester] = useState("");
   const [ipk, setIpk] = useState("");
 
-  // ==== STATE FOTO PROFIL ====
-  const [photo, setPhoto] = useState(null);           // file foto
-  const [photoPreview, setPhotoPreview] = useState(""); // URL preview
+  const [photo, setPhoto] = useState(null);           
+  const [photoPreview, setPhotoPreview] = useState(""); 
   const photoInputRef = useRef(null);
 
-  // ==== STATE TRANSKRIP ====
   const [transcript, setTranscript] = useState(null); // file PDF
   const transcriptInputRef = useRef(null);
 
@@ -34,7 +31,6 @@ export default function MahasiswaDashboardPage() {
     router.push("/mahasiswa/profile");
   };
 
-  // ====== FOTO PROFIL ======
   const handleUploadPhotoClick = () => {
     if (photoInputRef.current) {
       photoInputRef.current.click();
@@ -45,7 +41,6 @@ export default function MahasiswaDashboardPage() {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // Validasi ukuran 2MB
     if (file.size > 2 * 1024 * 1024) {
       alert("Ukuran foto maksimal 2MB");
       return;
@@ -63,7 +58,6 @@ export default function MahasiswaDashboardPage() {
     }
   };
 
-  // ====== TRANSKRIP PDF ======
   const handleTranscriptButtonClick = () => {
     if (transcriptInputRef.current) {
       transcriptInputRef.current.click();
@@ -90,7 +84,6 @@ export default function MahasiswaDashboardPage() {
     }
   };
 
-  // ====== SUBMIT (FRONTEND ONLY) ======
   const handleSubmit = (e) => {
     e.preventDefault();
 
