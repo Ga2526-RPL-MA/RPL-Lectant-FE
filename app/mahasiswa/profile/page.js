@@ -2,11 +2,10 @@
 
 import React, { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
-import Head from "next/head";
+import { useEffect } from "react";
 
 export default function MahasiswaDashboardPage() {
   const router = useRouter();
-
   const [nrp, setNrp] = useState("");
   const [namaLengkap, setNamaLengkap] = useState("");
   const [email, setEmail] = useState("");
@@ -14,14 +13,67 @@ export default function MahasiswaDashboardPage() {
   const [jurusan, setJurusan] = useState("");
   const [angkatan, setAngkatan] = useState("");
   const [semester, setSemester] = useState("");
-  const [ipk, setIpk] = useState("");
-
-  const [photo, setPhoto] = useState(null);           
-  const [photoPreview, setPhotoPreview] = useState(""); 
+  const [photo, setPhoto] = useState(null);
+  const [photoPreview, setPhotoPreview] = useState("");
   const photoInputRef = useRef(null);
-
-  const [transcript, setTranscript] = useState(null); // file PDF
+  const [transcript, setTranscript] = useState(null);
   const transcriptInputRef = useRef(null);
+  const [transcriptUrl, setTranscriptUrl] = useState("");
+
+  const getProfileMahasiswa = async () => {
+    try {
+      const token = localStorage.getItem("accessToken");
+      if (!token)
+        throw new Error("Token tidak ditemukan. Silakan login ulang.");
+
+      const response = await fetch(
+        "https://rpl-lectant-be.vercel.app/mahasiswa/profile",
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          credentials: "include",
+        }
+      );
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message);
+      }
+
+      const result = await response.json();
+      const profile = result.data;
+
+      setNrp(profile.nrp || "");
+      setNamaLengkap(profile.nama || "");
+      setEmail(profile.email || "");
+      setTelepon(profile.no_telepon || "");
+      setJurusan(profile.jurusan || "");
+      setAngkatan(profile.angkatan || "");
+      // Fix: semester dari API adalah number, tapi state harus string untuk select
+      setSemester(
+        profile.semester !== undefined && profile.semester !== null
+          ? String(profile.semester)
+          : ""
+      );
+      // Fix: transcript tidak ada di response, jangan set dari sini
+      // setTranscript(profile.transcript || "");
+      setTranscriptUrl(profile.dokumen_url || "");
+    } catch (error) {
+      console.error(error);
+      alert(error.message);
+    }
+  };
+
+  useEffect(() => {
+    getProfileMahasiswa();
+  }, []);
+
+  const getFileNameFromUrl = (url) => {
+    if (!url) return "";
+    return url.split("/").pop();
+  };
 
   const handleBack = () => {
     router.push("/mahasiswa");
@@ -75,34 +127,82 @@ export default function MahasiswaDashboardPage() {
     }
 
     setTranscript(file);
+    // Clear transcriptUrl ketika upload file baru
+    setTranscriptUrl("");
   };
 
   const handleRemoveTranscript = () => {
     setTranscript(null);
+    setTranscriptUrl("");
     if (transcriptInputRef.current) {
       transcriptInputRef.current.value = "";
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    console.log("DATA PROFIL (front-end only):", {
-      nrp,
-      namaLengkap,
-      email,
-      telepon,
-      jurusan,
-      angkatan,
-      semester,
-      ipk,
-      photo,
-      transcript,
-    });
+    try {
+      const token = localStorage.getItem("accessToken");
+      if (!token) throw new Error("Token tidak ditemukan.");
 
-    alert(
-      "Data profil sudah dikumpulkan di front-end (cek console). Nanti tinggal disambungkan ke API."
-    );
+      const hasFiles = photo || transcript;
+      let payload;
+      let headers = { Authorization: `Bearer ${token}` };
+
+      if (hasFiles) {
+        // --- FORM DATA ---
+        payload = new FormData();
+        payload.append("nrp", nrp);
+        payload.append("nama", namaLengkap);
+        payload.append("email", email);
+        payload.append("no_telepon", telepon);
+        payload.append("jurusan", jurusan);
+        payload.append("angkatan", angkatan);
+        payload.append("semester", semester);
+
+        if (photo) payload.append("photo", photo);
+        if (transcript) payload.append("transcript", transcript);
+      } else {
+        // --- JSON ---
+        payload = JSON.stringify({
+          nrp,
+          nama: namaLengkap,
+          email,
+          no_telepon: telepon,
+          jurusan,
+          angkatan,
+          semester: parseInt(semester),
+        });
+
+        headers["Content-Type"] = "application/json";
+      }
+
+      // FETC HANYA SEKALI
+      const response = await fetch(
+        "https://rpl-lectant-be.vercel.app/mahasiswa/profile",
+        {
+          method: "PUT",
+          headers,
+          body: payload,
+        }
+      );
+
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.message);
+
+      alert("Profil berhasil diperbarui!");
+
+      await getProfileMahasiswa();
+
+      // reset file input
+      setPhoto(null);
+      setPhotoPreview("");
+      setTranscript(null);
+    } catch (err) {
+      console.error(err);
+      alert(`Gagal memperbarui profil: ${err.message}`);
+    }
   };
 
   return (
@@ -285,9 +385,16 @@ export default function MahasiswaDashboardPage() {
                     onChange={(e) => setJurusan(e.target.value)}
                     required
                   >
-                    <option value="">Jurusan</option>
-                    <option value="Teknik Informatika">Teknik Informatika</option>
-                    <option value="Sistem Informasi">Sistem Informasi</option>
+                    <option value="">Pilih jurusan</option>
+                    <option value="Teknik Informatika">
+                      Teknik Informatika
+                    </option>
+                    <option value="Rekayasa Perangkat Lunak">
+                      Rekayasa Perangkat Lunak
+                    </option>
+                    <option value="Rekayasa Kecerdasan Artifisial">
+                      Rekayasa Kecerdasan Artifisial
+                    </option>
                   </select>
                 </div>
                 <div className="form-col">
@@ -318,22 +425,10 @@ export default function MahasiswaDashboardPage() {
                   >
                     <option value="">Pilih semester</option>
                     <option value="3">Semester 3</option>
+                    <option value="4">Semester 4</option>
                     <option value="5">Semester 5</option>
-                    <option value="7">Semester 7</option>
+                    <option value="6">Semester 6</option>
                   </select>
-                </div>
-                <div className="form-col">
-                  <label className="form-label">
-                    IPK <span className="form-required">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    className="form-input"
-                    placeholder="Misal: 3.75"
-                    value={ipk}
-                    onChange={(e) => setIpk(e.target.value)}
-                    required
-                  />
                 </div>
               </div>
 
@@ -344,13 +439,15 @@ export default function MahasiswaDashboardPage() {
                 </label>
 
                 <div className="student-upload-transkrip">
-                  <button
-                    type="button"
-                    className="student-upload-btn btn-secondary"
-                    onClick={handleTranscriptButtonClick}
-                  >
-                    Upload Transkrip (PDF, Max 5MB)
-                  </button>
+                  {!transcriptUrl && !transcript && (
+                    <button
+                      type="button"
+                      className="student-upload-btn btn-secondary"
+                      onClick={handleTranscriptButtonClick}
+                    >
+                      Upload Transkrip (PDF, Max 5MB)
+                    </button>
+                  )}
 
                   {/* INPUT FILE (HIDDEN) */}
                   <input
@@ -363,9 +460,18 @@ export default function MahasiswaDashboardPage() {
                   />
                 </div>
 
-                {transcript && (
+                {(transcriptUrl || transcript) && (
                   <div className="file-preview">
-                    <span>{transcript.name}</span>
+                    <a
+                      href={transcriptUrl || "#"}
+                      target={transcriptUrl ? "_blank" : "_self"}
+                      rel="noopener noreferrer"
+                    >
+                      {transcript
+                        ? transcript.name
+                        : getFileNameFromUrl(transcriptUrl)}
+                    </a>
+
                     <button
                       type="button"
                       onClick={handleRemoveTranscript}
