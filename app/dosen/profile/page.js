@@ -1,74 +1,136 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 
 export default function ProfilePage() {
   const router = useRouter();
 
-  const [profileData, setProfileData] = useState({
-    nip: "197805122005011001",
-    namaLengkap: "Dr. Bulan Bintang Galaksi, S.Kom., M.T.",
-    email: "bulan.galaksi@its.ac.id",
-    nomorTelepon: "+62 812-3456-7890",
-    jurusan: "Teknik Informatika",
-    foto: "", // kosong = pakai inisial
+  // Data asli dari backend
+  const [profileData, setProfileData] = useState(null);
+  const [courses, setCourses] = useState([]);
+  const [statistic, setStatistic] = useState({});
+
+  // Data untuk form edit
+  const [formData, setFormData] = useState({
+    namaLengkap: "",
+    nip: "",
+    email: "",
+    nomorTelepon: "",
+    jurusan: "",
+    foto: "",
   });
 
-  const [courses] = useState([
-    {
-      kode: "IF2110",
-      nama: "Algoritma & Struktur Data",
-      sks: 4,
-      semester: "Ganjil",
-    },
-    {
-      kode: "IF3110",
-      nama: "Pengembangan Aplikasi Berbasis Web",
-      sks: 4,
-      semester: "Genap",
-    },
-    {
-      kode: "IF2130",
-      nama: "Organisasi & Arsitektur Komputer",
-      sks: 3,
-      semester: "Ganjil",
-    },
-    {
-      kode: "IF3130",
-      nama: "Jaringan Komputer",
-      sks: 3,
-      semester: "Genap",
-    },
-    {
-      kode: "IF4110",
-      nama: "Perancangan Perangkat Lunak",
-      sks: 3,
-      semester: "Genap",
-    },
-  ]);
-
   const [isEditing, setIsEditing] = useState(false);
-  const [formData, setFormData] = useState({ ...profileData });
 
-  // ambil inisial dari nama dosen
-  const getInitials = (name) => {
-    if (!name) return "";
-    const parts = name.trim().split(" ");
-    const first = parts[0]?.[0] || "";
-    const last = parts[parts.length - 1]?.[0] || "";
-    return (first + last).toUpperCase();
-  };
+  // ===========================
+  // 🚀 GET PROFILE (useEffect)
+  // ===========================
+  useEffect(() => {
+    const token = localStorage.getItem("accessToken");
+    if (!token) return;
 
-  const handleBackClick = () => {
-    router.push("/dosen");
-  };
+    const fetchProfile = async () => {
+      try {
+        const res = await fetch("https://rpl-lectant-be.vercel.app/dosen/profile-aing", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
+
+        if (!res.ok) throw new Error("Failed to fetch profile");
+
+        const json = await res.json();
+        const data = json.data;
+
+        // mapping dari BE → FE
+        const mapped = {
+          namaLengkap: data.nama || "",
+          nip: data.nip || "",
+          email: data.email || "",
+          nomorTelepon: data.no_telepon || "",
+          jurusan: data.jurusan || "",
+          foto: data.foto || "",
+        };
+
+        setProfileData(mapped);
+      } catch (err) {
+        console.error("GET profile error:", err);
+      }
+    };
+
+    const fetchCourses = async () => {
+      try {
+        const res = await fetch("https://rpl-lectant-be.vercel.app/dosen/kelas-aing", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+        if (!res.ok) throw new Error("Failed to fetch classes");
+
+        const json = await res.json();
+
+        setCourses(json);
+
+      } catch (err) {
+        console.error("GET courses error:", err);
+      }
+    };
+
+    const fetchStatistic = async () => {
+      try {
+        const res = await fetch("https://rpl-lectant-be.vercel.app/dosen/statistik-aing", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+        if (!res.ok) throw new Error("Failed to fetch statistics");
+
+        const json = await res.json();
+
+        // mapping dari BE → FE
+        const mapped = {
+          totalMatkul: json.total_matkul || "",
+          jumlahLowongan: json.jumlah_lowongan || "",
+          jumlahAsisten: json.jumlah_asisten || "",
+        };
+
+        setStatistic(mapped);
+
+      } catch (err) {
+        console.error("GET statistics error:", err);
+      }
+    };
+
+    fetchProfile();
+    fetchCourses();
+    fetchStatistic();
+  }, []);
+
+  // ===========================
+  // 🖊 Edit Mode
+  // ===========================
   const handleEditClick = () => {
-    setFormData(profileData);
+    setFormData(profileData); // copy data yg sudah ada
     setIsEditing(true);
   };
 
+  const handleCancelEdit = () => {
+    setIsEditing(false);
+  };
+
+  // ===========================
+  // ✏ Input Handler
+  // ===========================
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -82,16 +144,69 @@ export default function ProfilePage() {
     setFormData((prev) => ({ ...prev, foto: url }));
   };
 
-  const handleSubmit = (e) => {
+  // ===========================
+  // 📌 PATCH PROFILE
+  // ===========================
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setProfileData(formData);
-    setIsEditing(false);
-    console.log("Profile Updated:", formData);
+
+    const token = localStorage.getItem("accessToken");
+
+    const bodyToSend = {
+      nama: formData.namaLengkap,
+      nip: formData.nip,
+      email: formData.email,
+      no_telepon: formData.nomorTelepon,
+      jurusan: formData.jurusan,
+      // foto tidak dikirim jika backend belum mendukung upload
+    };
+
+    try {
+      const res = await fetch("https://rpl-lectant-be.vercel.app/dosen/profile-aing", {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(bodyToSend),
+      });
+
+      if (!res.ok) throw new Error("Failed to update profile");
+
+      const json = await res.json();
+      const updated = json.data;
+
+      const mapped = {
+        namaLengkap: updated.nama,
+        nip: updated.nip,
+        email: updated.email,
+        nomorTelepon: updated.no_telepon,
+        jurusan: updated.jurusan,
+        foto: updated.foto || "",
+      };
+
+      setProfileData(mapped);
+      setIsEditing(false);
+    } catch (err) {
+      console.error("PATCH profile error:", err);
+    }
   };
 
-  const handleCancelEdit = () => {
-    setIsEditing(false);
+  // Helper untuk avatar
+  const getInitials = (name) => {
+    if (!name) return "";
+    const parts = name.trim().split(" ");
+    return (parts[0][0] + (parts[parts.length - 1][0] || "")).toUpperCase();
   };
+
+  const handleBackClick = () => {
+    router.push("/dosen");
+  };
+
+  // sementara loading
+  if (!profileData) {
+    return <div style={{ padding: 30 }}>Loading profile...</div>;
+  }
 
   const dataToShow = isEditing ? formData : profileData;
 
@@ -326,8 +441,8 @@ export default function ProfilePage() {
                 <tbody>
                   {courses.map((c, i) => (
                     <tr key={i}>
-                      <td>{c.kode}</td>
-                      <td>{c.nama}</td>
+                      <td>{c.kode_matkul}</td>
+                      <td>{c.nama_matkul}</td>
                       <td>{c.sks}</td>
                       <td>
                         <span className="badge-semester">
@@ -349,15 +464,15 @@ export default function ProfilePage() {
               <div className="stats-grid">
                 <div className="stats-item stats-blue">
                   <div className="stats-label">Total Mata Kuliah</div>
-                  <div className="stats-value">5</div>
+                  <div className="stats-value">{statistic.totalMatkul}</div>
                 </div>
                 <div className="stats-item stats-green">
                   <div className="stats-label">Lowongan Aktif</div>
-                  <div className="stats-value">8</div>
+                  <div className="stats-value">{statistic.jumlahLowongan}</div>
                 </div>
                 <div className="stats-item stats-pink">
                   <div className="stats-label">Total Asisten</div>
-                  <div className="stats-value">15</div>
+                  <div className="stats-value">{statistic.jumlahAsisten}</div>
                 </div>
               </div>
             </div>
