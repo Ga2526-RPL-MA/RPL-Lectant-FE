@@ -9,6 +9,7 @@ export default function ProfilePage() {
   // Data asli dari backend
   const [profileData, setProfileData] = useState(null);
   const [courses, setCourses] = useState([]);
+  const [statistic, setStatistic] = useState({});
 
   // Data untuk form edit
   const [formData, setFormData] = useState({
@@ -71,8 +72,7 @@ export default function ProfilePage() {
         },
       });
 
-
-        if (!res.ok) throw new Error("Failed to fetch profile");
+        if (!res.ok) throw new Error("Failed to fetch classes");
 
         const json = await res.json();
 
@@ -83,8 +83,37 @@ export default function ProfilePage() {
       }
     };
 
+    const fetchStatistic = async () => {
+      try {
+        const res = await fetch("https://rpl-lectant-be.vercel.app/dosen/statistik-aing", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+        if (!res.ok) throw new Error("Failed to fetch statistics");
+
+        const json = await res.json();
+
+        // mapping dari BE → FE
+        const mapped = {
+          totalMatkul: json.total_matkul || "",
+          jumlahLowongan: json.jumlah_lowongan || "",
+          jumlahAsisten: json.jumlah_asisten || "",
+        };
+
+        setStatistic(mapped);
+
+      } catch (err) {
+        console.error("GET statistics error:", err);
+      }
+    };
+
     fetchProfile();
     fetchCourses();
+    fetchStatistic();
   }, []);
 
   // ===========================
@@ -435,15 +464,15 @@ export default function ProfilePage() {
               <div className="stats-grid">
                 <div className="stats-item stats-blue">
                   <div className="stats-label">Total Mata Kuliah</div>
-                  <div className="stats-value">5</div>
+                  <div className="stats-value">{statistic.totalMatkul}</div>
                 </div>
                 <div className="stats-item stats-green">
                   <div className="stats-label">Lowongan Aktif</div>
-                  <div className="stats-value">8</div>
+                  <div className="stats-value">{statistic.jumlahLowongan}</div>
                 </div>
                 <div className="stats-item stats-pink">
                   <div className="stats-label">Total Asisten</div>
-                  <div className="stats-value">15</div>
+                  <div className="stats-value">{statistic.jumlahAsisten}</div>
                 </div>
               </div>
             </div>
