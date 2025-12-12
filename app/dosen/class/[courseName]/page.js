@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
 import Head from "next/head";
 
@@ -8,31 +8,108 @@ export default function ClassDetailsPage() {
   const router = useRouter();
   const params = useParams();
   const [jobStatus, setJobStatus] = useState("Seleksi Berlangsung");
-  const[selectedApplicant, setSelectedApplicant] = useState(null);
+  const [selectedApplicant, setSelectedApplicant] = useState(null);
   const [filter, setFilter] = useState("Semua");
   const [searchTerm, setSearchTerm] = useState("");
-  const [applicants, setApplicants] = useState([
-    { 
-      id: 1,
-      name: "Ahmad Rizki Pratama",
-      status: "Pending",
-      nrp: "13521001",
-      email: "ahmad@student.ac.id",
-      ipk: 3.85,
-      semester: 5,
-      phone: "081234567890",
-      appliedDate: "1 Nov 2024",
-      motivation: "Saya tertarik menjadi asisten dosen karena ingin memperdalam pemahaman saya tentang materi kuliah serta mengembangkan kemampuan mengajar saya.",
-    },
-  ]);
+  const [applicants, setApplicants] = useState([]);
+  const [lowonganDetails, setLowonganDetails] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   // Guard: kalau params belum siap
-  const rawCourseName = params?.courseName;
-  if (!rawCourseName) {
+  const lowonganId = params?.courseName; // courseName is actually the lowongan ID from URL
+
+  useEffect(() => {
+    if (!lowonganId) return;
+
+    const fetchData = async () => {
+      try {
+        setIsLoading(true);
+        setError(null);
+
+        // Get token from localStorage
+        const token = localStorage.getItem('accessToken');
+
+        if (!token) {
+          router.push('/signin');
+          return;
+        }
+
+        // Prepare headers with Authorization token
+        const headers = {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        };
+
+        // Fetch lowongan details
+        const lowonganResponse = await fetch(
+          `https://rpl-lectant-be.vercel.app/dosen/lowongan/${lowonganId}`,
+          { headers }
+        );
+
+        if (lowonganResponse.status === 401 || lowonganResponse.status === 403) {
+          localStorage.removeItem('accessToken');
+          router.push('/signin');
+          return;
+        }
+
+        if (!lowonganResponse.ok) throw new Error('Failed to fetch lowongan details');
+        const lowonganData = await lowonganResponse.json();
+        setLowonganDetails(lowonganData);
+
+        // Fetch applicants list
+        const applicantsResponse = await fetch(
+          `https://rpl-lectant-be.vercel.app/dosen/lowongan/${lowonganId}/pendaftar`,
+          { headers }
+        );
+
+        if (applicantsResponse.status === 401 || applicantsResponse.status === 403) {
+          localStorage.removeItem('accessToken');
+          router.push('/signin');
+          return;
+        }
+
+        if (!applicantsResponse.ok) throw new Error('Failed to fetch applicants');
+        const applicantsData = await applicantsResponse.json();
+
+        // Map API response to component state
+        const mappedApplicants = applicantsData.map(applicant => ({
+          id: applicant.id,
+          name: applicant.nama,
+          status: applicant.status.charAt(0).toUpperCase() + applicant.status.slice(1), // Capitalize first letter
+          nrp: applicant.nrp,
+          semester: applicant.semester,
+          phone: applicant.no_telp,
+          appliedDate: applicant.tanggal_daftar,
+        }));
+
+        setApplicants(mappedApplicants);
+      } catch (err) {
+        console.error('Error fetching data:', err);
+        setError(err.message);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [lowonganId, router]);
+
+  if (!lowonganId) {
     return <div>Loading...</div>;
   }
 
-  const decodedCourseName = decodeURIComponent(rawCourseName).replace(/-/g, " ");
+  if (isLoading) {
+    return <div className="dashboard-container">Loading...</div>;
+  }
+
+  if (error) {
+    return <div className="dashboard-container">Error: {error}</div>;
+  }
+
+  if (!lowonganDetails) {
+    return <div className="dashboard-container">No data found</div>;
+  }
 
   const handleProfileClick = () => {
     router.push("/dosen/profile");
@@ -41,14 +118,65 @@ export default function ClassDetailsPage() {
     router.push("/dosen");
   }
 
-  const openApplicant = (applicant) => {
-    setSelectedApplicant(applicant);
-  }
+  const openApplicant = async (applicant) => {
+    try {
+      const token = localStorage.getItem('accessToken');
+
+      if (!token) {
+        router.push('/signin');
+        return;
+      }
+
+      // Fetch detailed applicant data
+      const response = await fetch(
+        `https://rpl-lectant-be.vercel.app/dosen/lowongan/${lowonganId}/pendaftar/${applicant.id}`,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          }
+        }
+      );
+
+      if (response.status === 401 || response.status === 403) {
+        localStorage.removeItem('accessToken');
+        router.push('/signin');
+        return;
+      }
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch applicant details');
+      }
+
+      const result = await response.json();
+      const detailedApplicant = result.data;
+
+      // Map API response completely
+      setSelectedApplicant({
+        id: detailedApplicant.id,
+        name: detailedApplicant.nama,
+        nrp: detailedApplicant.nrp,
+        jurusan: detailedApplicant.jurusan,
+        semester: detailedApplicant.semester,
+        email: detailedApplicant.email,
+        phone: detailedApplicant.no_telp,
+        motivation: detailedApplicant.motivasi || 'Tidak ada motivasi',
+        pengalaman: detailedApplicant.pengalaman || [],
+        dokumen: detailedApplicant.dokumen,
+        appliedDate: detailedApplicant.tanggal_daftar,
+        status: detailedApplicant.status.charAt(0).toUpperCase() + detailedApplicant.status.slice(1)
+      });
+    } catch (error) {
+      console.error('Error fetching applicant details:', error);
+      alert('Gagal memuat detail pelamar');
+    }
+  };
+
   const closeApplicant = () => {
     setSelectedApplicant(null);
   }
 
- const closeApplicantModal = () => {
+  const closeApplicantModal = () => {
     setSelectedApplicant(null);
   };
 
@@ -60,18 +188,21 @@ export default function ClassDetailsPage() {
   const filterTabs = [
     { id: "Semua", label: "Semua" },
     { id: "Pending", label: "Pending" },
-    { id: "Approved", label: "Diterima" },
+    { id: "Accepted", label: "Diterima" },
     { id: "Rejected", label: "Ditolak" },
   ];
 
   const classDetails = {
-    title: decodedCourseName,
-    lecturer: "Bulan Bintang Galaksi",
-    schedule: "Selasa, 13.30–15.20",
-    assistantsRequired: 3,
+    title: lowonganDetails.matkul,
+    lecturer: lowonganDetails.dosen,
+    schedule: lowonganDetails.jadwal,
+    assistantsRequired: lowonganDetails.jumlah_asisten,
     totalApplicants: applicants.length,
     status: "Lowongan Aktif",
-    jobDescription: `Asisten untuk mata kuliah ${decodedCourseName}`,
+    location: lowonganDetails.lokasi,
+    deadline: lowonganDetails.deadline_pendaftaran,
+    requirements: lowonganDetails.persyaratan,
+    jobDescription: `Asisten untuk mata kuliah ${lowonganDetails.matkul}`,
   };
 
 
@@ -83,13 +214,66 @@ export default function ClassDetailsPage() {
     return matchStatus && matchName;
   });
 
-  const handleStatusChange = (id, newStatus) => {
-    setApplicants((prev) =>
-      prev.map((a) => (a.id === id ? { ...a, status: newStatus } : a))
-    );
+  const handleStatusChange = async (id, newStatus) => {
+    try {
+      const token = localStorage.getItem('accessToken');
+
+      if (!token) {
+        router.push('/signin');
+        return;
+      }
+
+      // Map frontend status to backend status
+      const statusMap = {
+        'Accepted': 'accepted',
+        'Rejected': 'rejected',
+        'Pending': 'pending'
+      };
+
+      const backendStatus = statusMap[newStatus] || newStatus.toLowerCase();
+
+      // Call API to update status
+      const response = await fetch(
+        `https://rpl-lectant-be.vercel.app/mahasiswa/lamaran/status/${id}`,
+        {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({
+            status_pendaftaran: backendStatus
+          })
+        }
+      );
+
+      if (response.status === 401 || response.status === 403) {
+        localStorage.removeItem('accessToken');
+        router.push('/signin');
+        return;
+      }
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to update status');
+      }
+
+      const result = await response.json();
+      console.log('Status updated:', result);
+
+      // Update local state
+      setApplicants((prev) =>
+        prev.map((a) => (a.id === id ? { ...a, status: newStatus } : a))
+      );
+
+      alert(result.message || `Status berhasil diubah menjadi ${newStatus}`);
+    } catch (error) {
+      console.error('Error updating status:', error);
+      alert(`Gagal mengubah status: ${error.message}`);
+    }
   };
 
-  const totalApproved = applicants.filter((a) => a.status === "Approved").length;
+  const totalAccepted = applicants.filter((a) => a.status === "Accepted").length;
 
   return (
     <div className="dashboard-container">
@@ -171,7 +355,7 @@ export default function ClassDetailsPage() {
               Total: {classDetails.totalApplicants}
             </span>
             <span className="status applicants-badge accepted">
-              Diterima: {totalApproved}/{classDetails.assistantsRequired}
+              Diterima: {totalAccepted}/{classDetails.assistantsRequired}
             </span>
           </div>
         </div>
@@ -190,7 +374,7 @@ export default function ClassDetailsPage() {
                   <div>
                     <p className="applicant-name">{selectedApplicant.name}</p>
                     <p className="applicant-subtext">
-                      {selectedApplicant.nim} • Teknik Informatika
+                      {selectedApplicant.nrp} • {selectedApplicant.jurusan || 'Teknik Informatika'}
                     </p>
                   </div>
                 </div>
@@ -198,14 +382,14 @@ export default function ClassDetailsPage() {
                 <div className="applicant-modal-header-right">
                   <span
                     className={`status-badge ${
-                      selectedApplicant.status === "Approved"
-                        ? "status-approved"
+                      selectedApplicant.status === "Accepted"
+                        ? "status-accepted"
                         : selectedApplicant.status === "Rejected"
                         ? "status-rejected"
                         : "status-pending"
                     }`}
                   >
-                    {selectedApplicant.status === "Approved"
+                    {selectedApplicant.status === "Accepted"
                       ? "Diterima"
                       : selectedApplicant.status === "Rejected"
                       ? "Ditolak"
@@ -217,12 +401,8 @@ export default function ClassDetailsPage() {
                 </div>
               </div>
 
-              {/* GRID IPK / SEMESTER / MENDAFTAR */}
+              {/* GRID SEMESTER / MENDAFTAR */}
               <div className="applicant-summary-grid">
-                <div className="summary-box">
-                  <span className="summary-label">IPK</span>
-                  <span className="summary-value">{selectedApplicant.ipk}</span>
-                </div>
                 <div className="summary-box">
                   <span className="summary-label">Semester</span>
                   <span className="summary-value">{selectedApplicant.semester}</span>
@@ -247,6 +427,45 @@ export default function ClassDetailsPage() {
                 <p className="section-title">Motivasi</p>
                 <p className="section-text">{selectedApplicant.motivation}</p>
               </div>
+
+              {/* PENGALAMAN */}
+              {selectedApplicant.pengalaman && selectedApplicant.pengalaman.length > 0 && (
+                <div className="applicant-section">
+                  <p className="section-title">Pengalaman</p>
+                  {selectedApplicant.pengalaman.map((exp, index) => (
+                    <div key={index} className="section-text">
+                      <p><strong>{exp.posisi || exp.title}</strong></p>
+                      <p>{exp.organisasi || exp.company} • {exp.tahun || exp.year}</p>
+                      {exp.deskripsi && <p>{exp.deskripsi}</p>}
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* DOKUMEN */}
+              {selectedApplicant.dokumen && (
+                <div className="applicant-section">
+                  <p className="section-title">Dokumen Pendukung</p>
+                  <a
+                    href={selectedApplicant.dokumen}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="section-text"
+                    style={{ color: '#007bff', textDecoration: 'underline', cursor: 'pointer' }}
+                  >
+                    Lihat Dokumen
+                  </a>
+                  {selectedApplicant.dokumen.match(/\.(jpg|jpeg|png|gif)$/i) && (
+                    <div style={{ marginTop: '10px' }}>
+                      <img
+                        src={selectedApplicant.dokumen}
+                        alt="Dokumen"
+                        style={{ maxWidth: '100%', maxHeight: '300px', objectFit: 'contain' }}
+                      />
+                    </div>
+                  )}
+                </div>
+              )}
 
               {/* ACTION BUTTONS BAWAH */}
               <div className="applicant-modal-actions">
@@ -315,7 +534,7 @@ export default function ClassDetailsPage() {
                     <p className="applicant-name">{a.name}</p>
                     <p className="applicant-subtext">{a.nrp}</p>
                     <p className="applicant-subtext">
-                      IPK: {a.ipk} • Semester {a.semester}
+                      Semester {a.semester}
                     </p>
                      <button
                       className="applicant-view-btn"
@@ -330,24 +549,24 @@ export default function ClassDetailsPage() {
                 <div className="applicant-right">
                   <span
                     className={`status-badge ${
-                      a.status === "Approved"
-                        ? "status-approved"
+                      a.status === "Accepted"
+                        ? "status-accepted"
                         : a.status === "Rejected"
                         ? "status-rejected"
                         : "status-pending"
                     }`}
                   >
-                    {a.status === "Approved"
-                      ? "Accepted"
+                    {a.status === "Accepted"
+                      ? "Diterima"
                       : a.status === "Rejected"
-                      ? "Rejected"
-                      : "Pending"}
+                      ? "Ditolak"
+                      : "Menunggu"}
                   </span>
 
                   <div className="applicant-actions-inline">
                     <button
                       className="btn-accept-small"
-                      onClick={() => handleStatusChange(a.id, "Approved")}
+                      onClick={() => handleStatusChange(a.id, "Accepted")}
                     >
                       Terima
                     </button>
