@@ -42,7 +42,6 @@ const LowonganDetail = ({ job, closeModal }) => {
           <button className="btn-lamar" onClick={closeModal}>
             Tutup
           </button>
-          <button className="btn-lamar">Lamar Sekarang</button>
         </div>
       </div>
     </div>

@@ -4,14 +4,40 @@ import React, { useState } from "react";
 
 const FormLamar = ({ job, closeModal }) => {
   const [motivation, setMotivation] = useState("");
-  const [transcript, setTranscript] = useState(null);
+
+  const [formData, setFormData] = useState({
+    motivasi: "",
+  });
 
   // Handle application form submission
-  const handleSubmitApplication = (e) => {
+  const handleSubmitApplication = async (e) => {
     e.preventDefault();
+
+    const token = localStorage.getItem("accessToken");
+
+    const bodyToSend = {
+      motivasi: motivation,
+    };
+    
+    try{
+      const res = await fetch(`https://rpl-lectant-be.vercel.app/mahasiswa/lowongan/${job.id}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(bodyToSend),
+      });
+
+      if (!res.ok) { 
+        throw new Error("Failed to submit application");
+      }
+    } catch (error) {
+      console.error("POST lamaran error:", err);
+    }
+
     alert("Lamaran telah terkirim!");
     setMotivation("");  // Reset the form
-    setTranscript(null); // Reset the transcript file
     closeModal(); // Close the modal after submission
   };
 
@@ -33,30 +59,6 @@ const FormLamar = ({ job, closeModal }) => {
               required
             />
             <small>Minimal 100 karakter</small>
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="transcript">Transkrip Nilai *</label>
-            <input
-              type="file"
-              id="transcript"
-              onChange={(e) => setTranscript(e.target.files[0])}
-              accept="application/pdf"
-              required
-            />
-            {transcript && (
-              <div className="file-preview">
-                <span>{transcript.name}</span>
-                <button
-                  type="button"
-                  onClick={() => setTranscript(null)}
-                  className="remove-file"
-                >
-                  X
-                </button>
-              </div>
-            )}
-            <small>Pastikan dokumen yang Anda upload dapat dibaca dengan jelas.</small>
           </div>
 
           <div className="form-footer">
