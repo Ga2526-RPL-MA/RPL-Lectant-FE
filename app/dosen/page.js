@@ -15,6 +15,8 @@ export default function DosenDashboard() {
   const [activeClass, setActiveClass] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [filterStatus, setFilterStatus] = useState("all");
+  const [showFilterDropdown, setShowFilterDropdown] = useState(false);
 
   const handleTabClick = (tabId) => {
     setActiveTab(tabId);
@@ -129,6 +131,57 @@ export default function DosenDashboard() {
   router.push(`/dosen/class/${courseName}`);
   }
 
+  // Filter and sort classes
+  const getFilteredAndSortedClasses = () => {
+    let filtered = [...classes];
+
+    // Filter by status
+    if (filterStatus !== "all") {
+      filtered = filtered.filter(kelas =>
+        kelas.status.toLowerCase() === filterStatus.toLowerCase()
+      );
+    }
+
+    // Sort by search query
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase();
+      filtered = filtered.filter(kelas =>
+        kelas.title.toLowerCase().includes(query) ||
+        kelas.lecturer.toLowerCase().includes(query) ||
+        kelas.schedule.toLowerCase().includes(query)
+      );
+
+      // Sort by relevance (title matches first, then lecturer, then schedule)
+      filtered.sort((a, b) => {
+        const aTitleMatch = a.title.toLowerCase().includes(query);
+        const bTitleMatch = b.title.toLowerCase().includes(query);
+        const aLecturerMatch = a.lecturer.toLowerCase().includes(query);
+        const bLecturerMatch = b.lecturer.toLowerCase().includes(query);
+
+        if (aTitleMatch && !bTitleMatch) return -1;
+        if (!aTitleMatch && bTitleMatch) return 1;
+        if (aLecturerMatch && !bLecturerMatch) return -1;
+        if (!aLecturerMatch && bLecturerMatch) return 1;
+        return 0;
+      });
+    }
+
+    return filtered;
+  };
+
+  const handleFilterChange = (status) => {
+    setFilterStatus(status);
+    setShowFilterDropdown(false);
+  };
+
+  const getFilterLabel = () => {
+    switch(filterStatus) {
+      case "active": return "Active";
+      case "closed": return "Closed";
+      default: return "All Status";
+    }
+  };
+
   return (
     <>
       <Head>
@@ -178,21 +231,58 @@ export default function DosenDashboard() {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
-              <button className="filter-btn">All Status ▾</button>
+              <div style={{ position: 'relative' }}>
+                <button
+                  className="filter-btn"
+                  onClick={() => setShowFilterDropdown(!showFilterDropdown)}
+                >
+                  {getFilterLabel()} ▾
+                </button>
+                {showFilterDropdown && (
+                  <div className="filter-dropdown">
+                    <button
+                      className={`filter-option ${filterStatus === 'all' ? 'active' : ''}`}
+                      onClick={() => handleFilterChange('all')}
+                    >
+                      All Status
+                    </button>
+                    <button
+                      className={`filter-option ${filterStatus === 'active' ? 'active' : ''}`}
+                      onClick={() => handleFilterChange('active')}
+                    >
+                      Active
+                    </button>
+                    <button
+                      className={`filter-option ${filterStatus === 'closed' ? 'active' : ''}`}
+                      onClick={() => handleFilterChange('closed')}
+                    >
+                      Closed
+                    </button>
+                  </div>
+                )}
+              </div>
             </div>
             <div className="class-list">
-              {classes.length === 0 ? (
+              {isLoading ? (
+                <div className="no-courses-found">
+                  <p>Loading...</p>
+                </div>
+              ) : error ? (
+                <div className="no-courses-found">
+                  <p>Error: {error}</p>
+                </div>
+              ) : getFilteredAndSortedClasses().length === 0 ? (
                 <div className="no-courses-found">
                   <img src="/images/BOOK.png" alt="Book" className="book-icon" />
                   <p>No courses found</p>
                   <p>Try adjusting your search or filters</p>
                 </div>
               ) : (
-                classes.map((kelas) => (
+                getFilteredAndSortedClasses().map((kelas) => (
                   <div
                     key={kelas.id}
                     className="class-card"
-                    onClick={() => router.push(`/dosen/class/${kelas.id}`)} 
+                    onClick={() => router.push(`/dosen/class/${kelas.id}`)}
                   >
                     <div className="card-header">
                       <span className="status">{kelas.status}</span>
