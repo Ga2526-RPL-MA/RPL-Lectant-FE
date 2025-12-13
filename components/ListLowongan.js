@@ -79,7 +79,7 @@ export default function CreateLowongan({ onSubmit }) {
       const result = await response.json();
       console.log('Lowongan created:', result);
 
-      const courseName = selectedMatkul.id_mk.toLowerCase().replace(/\s+/g, "-");
+      const courseName = selectedMatkul.id_mk;
       router.push(`/dosen/class/${courseName}`);
       router.refresh();
       if (onSubmit) {

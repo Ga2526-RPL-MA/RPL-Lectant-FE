@@ -118,6 +118,71 @@ export default function ClassDetailsPage() {
     router.push("/dosen");
   }
 
+  const handleCloseLowongan = async () => {
+    try {
+      const token = localStorage.getItem('accessToken');
+
+      if (!token) {
+        router.push('/signin');
+        return;
+      }
+
+      // Confirm before closing
+      const confirmClose = window.confirm('Apakah Anda yakin ingin menutup lowongan ini?');
+      if (!confirmClose) return;
+
+      console.log('Closing lowongan:', lowonganId);
+
+      // Call API to close lowongan
+      const response = await fetch(
+        `https://rpl-lectant-be.vercel.app/dosen/lowongan/${lowonganId}/status`,
+        {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({
+            status: 'tutup'
+          })
+        }
+      );
+
+      console.log('Response status:', response.status);
+      console.log('Response headers:', response.headers.get('content-type'));
+
+      if (response.status === 401 || response.status === 403) {
+        localStorage.removeItem('accessToken');
+        router.push('/signin');
+        return;
+      }
+
+      // Check if response is JSON
+      const contentType = response.headers.get('content-type');
+      if (!contentType || !contentType.includes('application/json')) {
+        const textResponse = await response.text();
+        console.error('Non-JSON response:', textResponse);
+        throw new Error('Server returned non-JSON response. Please check the API endpoint.');
+      }
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to close lowongan');
+      }
+
+      const result = await response.json();
+      console.log('Lowongan closed:', result);
+
+      alert(result.message || 'Lowongan berhasil ditutup');
+
+      // Redirect to dashboard after closing
+      router.push('/dosen');
+    } catch (error) {
+      console.error('Error closing lowongan:', error);
+      alert(`Gagal menutup lowongan: ${error.message}`);
+    }
+  }
+
   const openApplicant = async (applicant) => {
     try {
       const token = localStorage.getItem('accessToken');
@@ -308,13 +373,8 @@ export default function ClassDetailsPage() {
           </div>
 
           <div className="class-status">
-            <button 
-              className="finalize-button"
-              onClick={handleFinalizeClick}
-              disabled={jobStatus === "Lowongan Aktif"}
-              >Finalisasi Seleksi
-            </button>
-            <button className="close-button" onClick={handleDashboardClick}>Tutup Lowongan</button>
+
+            <button className="close-button" onClick={handleCloseLowongan}>Tutup Lowongan</button>
           </div>
         </div>
 
