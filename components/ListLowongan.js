@@ -1,34 +1,94 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
 export default function CreateLowongan({ onSubmit }) {
+  const [kelasData, setKelasData] = useState([]);
+  const [matkulData, setMatkulData] = useState([]);
+  const [selectedMatkul, setSelectedMatkul] = useState();
   const [form, setForm] = useState({
-    mataKuliah: "",
+    id_dosen: "",
+    matkul:  "",
     kelas: "",
-    tahunAjaran: "",
-    persyaratan: "",
-    jumlahAsisten: "",
+    tahun_ajaran: "",
+    jumlah_asisten: "",
     honor: "",
-    periodeDaftarMulai: "",
-    periodeDaftarSelesai: "",
-    kontrakMulai: "",
-    kontrakSelesai: "",
+    mulai_lowongan: "",
+    akhir_lowongan: "",
+    mulai_kontrak: "",
+    akhir_kontrak: "",
+    persyaratan: "",
   });
+  
+  console.log(form);
+  useEffect(() => {
+    const fetchDataMatkul = async () => {
+      const data = await fetch('https://rpl-lectant-be.vercel.app/kelas/mata-kuliah', {
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
+        },
+      });
+      return data.json();
+    }
+    fetchDataMatkul().then((data) => setMatkulData(data));
+  }, []);
 
   const router = useRouter();
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setForm((prev) => ({ ...prev, [name]: value }));
+
+    if (name === "matkul") {
+      // Find the selected mata kuliah object based on the value
+      const selected = matkulData.find((matkul) => matkul.nama_mk == value);
+      setSelectedMatkul(selected); // Set the selected mata kuliah object
+      setForm((prev) => ({ ...prev, [name]: value })); // Update the form state
+    } else {
+      setForm((prev) => ({ ...prev, [name]: value })); // Update other form fields
+    }
   };
 
- const handleSubmit = (e) => {
+
+ const handleSubmit = async (e) => {
     e.preventDefault();
-    const courseName = form.mataKuliah.toLowerCase().replace(/\s+/g, "-");
-    router.push(`/dosen/class/${courseName}`);
-    if (onSubmit) {
-      onSubmit(form); 
+    try {
+      const formData = {
+        ...form,
+        jumlah_asisten: Number(form.jumlah_asisten),
+        honor: Number(form.honor),
+      }
+
+      const response = await fetch('https://rpl-lectant-be.vercel.app/dosen/lowongan', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const id_dosen = localStorage.getItem('id_dosen');
+      form.id_dosen = id_dosen;
+      console.log(id_dosen);
+
+      if (!response.ok) {
+        throw new Error('Failed to create lowongan');
+      }
+
+      const result = await response.json();
+      console.log('Lowongan created:', result);
+
+      const courseName = selectedMatkul.id_mk.toLowerCase().replace(/\s+/g, "-");
+      router.push(`/dosen/class/${courseName}`);
+      router.refresh();
+      if (onSubmit) {
+        onSubmit(form); 
+      }
+    } catch (error) {
+      console.error('Error creating lowongan:', error);
+      // Optionally, show an alert or set an error state
+      alert('Failed to create lowongan. Please try again.');
     }
   };
 
@@ -66,20 +126,19 @@ export default function CreateLowongan({ onSubmit }) {
                 Mata Kuliah<span className="form-required">*</span>
               </label>
               <select
-                name="mataKuliah"
-                value={form.mataKuliah}
-                onChange={handleChange}
-                className="form-input"
-                required
-              >
-                <option value="">Pilih mata kuliah</option>
-                <option value="Perancangan Perangkat Lunak">
-                  Perancangan Perangkat Lunak
+              name="matkul"
+              value={form.matkul}
+              onChange={handleChange}
+              className="form-input"
+              required
+            >
+              <option value="">Pilih mata kuliah</option>
+              {matkulData.map((matkul) => (
+                <option key={matkul.id_mk} value={matkul.nama_mk}>
+                  {matkul.nama_mk}
                 </option>
-                <option value="Pemrograman Berorientasi Objek">
-                  Pemrograman Berorientasi Objek
-                </option>
-              </select>
+              ))}
+            </select>
             </div>
 
             {/* Kelas */}
@@ -91,12 +150,18 @@ export default function CreateLowongan({ onSubmit }) {
                 name="kelas"
                 value={form.kelas}
                 onChange={handleChange}
+                placeholder="Pilih kelas"
                 className="form-input"
                 required
               >
                 <option value="">Pilih kelas</option>
-                <option value="A">Kelas A</option>
-                <option value="B">Kelas B</option>
+                { selectedMatkul ? selectedMatkul.kelas.map((kelas) => (
+                  <option key={kelas.id_kelas} value={kelas.nama_kelas}>
+                    {kelas.nama_kelas}
+                  </option>
+                )) : (
+                  <option value="">Pilih mata kuliah terlebih dahulu</option>
+                )}
               </select>
             </div>
 
@@ -106,8 +171,8 @@ export default function CreateLowongan({ onSubmit }) {
                 Tahun Ajaran<span className="form-required">*</span>
               </label>
               <select
-                name="tahunAjaran"
-                value={form.tahunAjaran}
+                name="tahun_ajaran"
+                value={form.tahun_ajaran}
                 onChange={handleChange}
                 className="form-input"
                 required
@@ -140,8 +205,8 @@ export default function CreateLowongan({ onSubmit }) {
                 <label className="form-label">Jumlah Asisten Dibutuhkan</label>
                 <input
                   type="number"
-                  name="jumlahAsisten"
-                  value={form.jumlahAsisten}
+                  name="jumlah_asisten"
+                  value={form.jumlah_asisten}
                   onChange={handleChange}
                   className="form-input"
                   placeholder="Masukkan jumlah asisten"
@@ -168,8 +233,8 @@ export default function CreateLowongan({ onSubmit }) {
                 <div className="form-col">
                   <input
                     type="date"
-                    name="periodeDaftarMulai"
-                    value={form.periodeDaftarMulai}
+                    name="mulai_lowongan"
+                    value={form.mulai_lowongan}
                     onChange={handleChange}
                     className="form-input"
                   />
@@ -177,8 +242,8 @@ export default function CreateLowongan({ onSubmit }) {
                 <div className="form-col">
                   <input
                     type="date"
-                    name="periodeDaftarSelesai"
-                    value={form.periodeDaftarSelesai}
+                    name="akhir_lowongan"
+                    value={form.akhir_lowongan}
                     onChange={handleChange}
                     className="form-input"
                   />
@@ -193,8 +258,8 @@ export default function CreateLowongan({ onSubmit }) {
                 <div className="form-col">
                   <input
                     type="date"
-                    name="kontrakMulai"
-                    value={form.kontrakMulai}
+                    name="mulai_kontrak"
+                    value={form.mulai_kontrak}
                     onChange={handleChange}
                     className="form-input"
                   />
@@ -202,8 +267,8 @@ export default function CreateLowongan({ onSubmit }) {
                 <div className="form-col">
                   <input
                     type="date"
-                    name="kontrakSelesai"
-                    value={form.kontrakSelesai}
+                    name="akhir_kontrak"
+                    value={form.akhir_kontrak}
                     onChange={handleChange}
                     className="form-input"
                   />

@@ -87,7 +87,7 @@ export default function DosenDashboard() {
   };
 
   const tabs = [
-    { id: "kelasAndaBuka", label: "Kelas yang Anda Buka" },
+    { id: "kelasAndaBuka", label: "Kelas yang Anda Buka", },
     { id: "kelasYangDibuka", label: "Kelas yang Dibuka" },
     { id: "daftarKelas", label: "Daftar Kelas" },
   ];
@@ -105,7 +105,7 @@ export default function DosenDashboard() {
   };
 
   const handleSubmitCreate = (form) => {
-    const courseName = form.mataKuliah.toLowerCase().replace(/\s+/g, "-");
+    const courseName = form.matkul.toLowerCase().replace(/\s+/g, "-");
     const newClass = {
       id: Date.now(),
       title: form.mataKuliah,
@@ -135,7 +135,11 @@ export default function DosenDashboard() {
         <title>RPL Student - Dashboard</title>
       </Head>
       <div className="dashboard-container">
-        <div className="dashboard-header">
+
+
+        {mode === "list" && (
+          <>
+          <div className="dashboard-header">
           <img
             src="/images/RPL-LECTANT.png"
             alt="Logo"
@@ -150,9 +154,7 @@ export default function DosenDashboard() {
             </button>
           </div>
         </div>
-
-        {mode === "list" && (
-          <>
+        
             {/* Tabs */}
             <div className="tabs-wrapper">
               <div className="tabs-container">
@@ -190,7 +192,7 @@ export default function DosenDashboard() {
                   <div
                     key={kelas.id}
                     className="class-card"
-                    onClick={() => router.push(`/dosen/class/${kelas.title.toLowerCase().replace(/\s+/g, "-")}`)} 
+                    onClick={() => router.push(`/dosen/class/${kelas.id}`)} 
                   >
                     <div className="card-header">
                       <span className="status">{kelas.status}</span>
