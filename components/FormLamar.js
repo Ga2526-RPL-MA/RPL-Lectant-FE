@@ -4,22 +4,52 @@ import React, { useState } from "react";
 
 const FormLamar = ({ job, closeModal }) => {
   const [motivation, setMotivation] = useState("");
-  const [transcript, setTranscript] = useState(null);
+  const [loading, setLoading] = useState(false);
 
-  // Handle application form submission
-  const handleSubmitApplication = (e) => {
+  const handleSubmitApplication = async (e) => {
     e.preventDefault();
-    alert("Lamaran telah terkirim!");
-    setMotivation("");  // Reset the form
-    setTranscript(null); // Reset the transcript file
-    closeModal(); // Close the modal after submission
+
+
+    try {
+      setLoading(true);
+
+      const token = localStorage.getItem("accessToken");
+      if (!token) throw new Error("Silakan login ulang");
+
+      const response = await fetch(
+        `https://rpl-lectant-be.vercel.app/mahasiswa/lamaran/${job.id}`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            motivasi: motivation,
+          }),
+        }
+      );
+
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.message);
+
+      setMotivation("");
+      closeModal();
+    } catch (err) {
+      console.error(err);
+      alert(err.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <div className="modal-overlay">
       <div className="modal-content">
         <h2>Lamar Posisi Asisten Dosen</h2>
-        <p><strong>{job.title}</strong></p>
+        <p>
+          <strong>{job.title}</strong>
+        </p>
         <p>{job.lecturer}</p>
 
         <form onSubmit={handleSubmitApplication}>
@@ -32,39 +62,26 @@ const FormLamar = ({ job, closeModal }) => {
               placeholder="Tuliskan motivasi Anda untuk melamar"
               required
             />
-            <small>Minimal 100 karakter</small>
           </div>
 
-          <div className="form-group">
-            <label htmlFor="transcript">Transkrip Nilai *</label>
-            <input
-              type="file"
-              id="transcript"
-              onChange={(e) => setTranscript(e.target.files[0])}
-              accept="application/pdf"
-              required
-            />
-            {transcript && (
-              <div className="file-preview">
-                <span>{transcript.name}</span>
-                <button
-                  type="button"
-                  onClick={() => setTranscript(null)}
-                  className="remove-file"
-                >
-                  X
-                </button>
-              </div>
-            )}
-            <small>Pastikan dokumen yang Anda upload dapat dibaca dengan jelas.</small>
+          <div className="info-box">
+            <small>
+              Transkrip nilai akan diambil otomatis dari profil mahasiswa.
+              Pastikan transkrip Anda sudah di-upload di halaman profil.
+            </small>
           </div>
 
           <div className="form-footer">
-            <button type="button" onClick={closeModal} className="cancel-btn">
+            <button
+              type="button"
+              onClick={closeModal}
+              className="cancel-btn"
+              disabled={loading}
+            >
               Batal
             </button>
-            <button type="submit" className="submit-btn">
-              Kirim Lamaran
+            <button type="submit" className="submit-btn" disabled={loading}>
+              {loading ? "Mengirim..." : "Kirim Lamaran"}
             </button>
           </div>
         </form>
