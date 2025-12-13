@@ -1,29 +1,17 @@
 "use client";
 
 import React, { useState } from "react";
-import LowonganDetail from "../components/LowonganDetail";  // Correct the path to the LowonganDetail component
-import FormLamar from "../components/FormLamar";  // Correct the path to the FormLamar component
- // Modal for application form
+import LowonganDetail from "../components/LowonganDetail";
+import FormLamar from "../components/FormLamar";
 
-const JobCard = ({ job }) => {
-  const [showDetailModal, setShowDetailModal] = useState(false); // Modal for job details
-  const [showApplyModal, setShowApplyModal] = useState(false); // Modal for application form
+const JobCard = ({ job, isLamaran }) => {
+  const [showDetailModal, setShowDetailModal] = useState(false);
+  const [showApplyModal, setShowApplyModal] = useState(false);
 
-  const handleViewDetail = () => {
-    setShowDetailModal(true); // Show the job detail modal
-  };
-
-  const handleApply = () => {
-    setShowApplyModal(true); // Show the application modal
-  };
-
-  const closeDetailModal = () => {
-    setShowDetailModal(false); // Close the job detail modal
-  };
-
-  const closeApplyModal = () => {
-    setShowApplyModal(false); // Close the application modal
-  };
+  const handleViewDetail = () => setShowDetailModal(true);
+  const handleApply = () => setShowApplyModal(true);
+  const closeDetailModal = () => setShowDetailModal(false);
+  const closeApplyModal = () => setShowApplyModal(false);
 
   return (
     <div className="job-card">
@@ -33,28 +21,44 @@ const JobCard = ({ job }) => {
       </div>
 
       <div className="job-card-body">
-        <p>Jadwal: {job.schedule}</p>
-        <p>Lokasi: {job.location}</p>
-        <p>Deadline: {job.deadline}</p>
-        <p>Persyaratan: {job.requirements}</p>
+        {isLamaran ? (
+          <>
+            <p>Tanggal Melamar: {job.dateApplied}</p>
+            <p>
+              Status:{" "}
+              <span className={`status-badge ${job.statusBadge}`}>
+                {job.statusText}
+              </span>
+            </p>
+            <p>Pesan: {job.messageStatus}</p>
+          </>
+        ) : (
+          <>
+            <p>Jadwal: {job.schedule}</p>
+            <p>Lokasi: {job.location}</p>
+            <p>Deadline: {job.deadline}</p>
+            <p>Persyaratan: {job.requirements}</p>
+          </>
+        )}
       </div>
 
-      <div className="job-card-footer">
-        <button className="btn-detail" onClick={handleViewDetail}>
-          Lihat Detail
-        </button>
-        <button className="job-card-button" onClick={handleApply}>
-          Lamar Sekarang
-        </button>
-      </div>
-
-      {/* Modal for Job Details (LowonganDetail) */}
-      {showDetailModal && (
-        <LowonganDetail job={job} closeModal={closeDetailModal} />
+      {/* Hanya tampilkan tombol jika bukan lamaran */}
+      {!isLamaran && (
+        <div className="job-card-footer">
+          <button className="btn-detail" onClick={handleViewDetail}>
+            Lihat Detail
+          </button>
+          <button className="job-card-button" onClick={handleApply}>
+            Lamar Sekarang
+          </button>
+        </div>
       )}
 
-      {/* Modal for Job Application (JobApplyForm) */}
-      {showApplyModal && (
+      {/* Modal hanya untuk lowongan, tidak untuk lamaran */}
+      {showDetailModal && !isLamaran && (
+        <LowonganDetail job={job} closeModal={closeDetailModal} />
+      )}
+      {showApplyModal && !isLamaran && (
         <FormLamar job={job} closeModal={closeApplyModal} />
       )}
     </div>
